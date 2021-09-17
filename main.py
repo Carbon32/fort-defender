@@ -44,9 +44,14 @@ class Fort():
         self.rect.x = x 
         self.rect.y = y
 
+    def fireBall(self):
+        position = pygame.mouse.get_pos()
+        pygame.draw.line(gameWindow, (255, 255, 255), (self.rect.midleft[0], self.rect.midleft[1]), (position))
+
     def drawFort(self):
         self.image = self.sprite
         gameWindow.blit(self.image, self.rect)
+
         
 # Game Loop: #
 
@@ -57,6 +62,7 @@ while gameRunning:
     handleFPS.tick(60)
     gameWindow.blit(gameBackground, (0, 0))
     fort.drawFort()
+    fort.fireBall()
 
     # Events handler: #
     for event in pygame.event.get():
