@@ -9,6 +9,7 @@
 # Imports: #
 
 import pygame
+import math
 
 # Pygame Initialization: #
 
@@ -30,32 +31,65 @@ handleFPS = pygame.time.Clock()
 
 gameBackground = pygame.image.load('assets/Background.png').convert_alpha()
 fortUndamaged = pygame.image.load('assets/Fort.png').convert_alpha()
+cannonBall = pygame.image.load('assets/Ball.png').convert_alpha()
+ballWidth = cannonBall.get_width()
+ballHeight = cannonBall.get_height()
+cannonBall = pygame.transform.scale(cannonBall, (int(ballWidth * 0.4), (int(ballHeight * 0.4))))
 
 # Game Classes: #
 
 class Fort():
-    def __init__(self, sprite, x, y, scale):
+    def __init__(self, image, x, y, scale):
         self.health = 1000
         self.maxHealth = self.health
-        width = sprite.get_width()
-        height = sprite.get_height()
-        self.sprite = pygame.transform.scale(sprite, (int(width * scale), int(height * scale)))
-        self.rect = self.sprite.get_rect()
+        self.fired = False
+        width = image.get_width()
+        height = image.get_height()
+        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        self.rect = self.image.get_rect()
         self.rect.x = x 
         self.rect.y = y
 
     def fireBall(self):
         position = pygame.mouse.get_pos()
+        xDistance = (position[0] - self.rect.midleft[0])
+        yDistance = -(position[1] - self.rect.midleft[1])
+        self.angle = math.degrees(math.atan2(yDistance, xDistance))
         pygame.draw.line(gameWindow, (255, 255, 255), (self.rect.midleft[0], self.rect.midleft[1]), (position))
+        if (pygame.mouse.get_pressed()[0] and self.fired == False):
+            ball = Ball(cannonBall, self.rect.midleft[0], self.rect.midleft[1], self.angle)
+            cannonBalls.add(ball)
+            self.fired = True
+        if (pygame.mouse.get_pressed()[0] == False):
+            self.fired = False
+
 
     def drawFort(self):
-        self.image = self.sprite
         gameWindow.blit(self.image, self.rect)
 
-        
+class Ball(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, angle):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.angle = math.radians(angle)
+        self.speed = 10
+        self.deltaX = math.cos(self.angle) * self.speed
+        self.deltaY = -(math.sin(self.angle) * self.speed)
+
+    def update(self):
+        if(self.rect.right < 0 or self.rect.left > screenWidth or self.rect.bottom < 0 or self.rect.top > screenHeight):
+            self.kill()
+        self.rect.x += self.deltaX
+        self.rect.y += self.deltaY
+
+
 # Game Loop: #
 
 fort = Fort(fortUndamaged, 500, 235, 3) # Fort Creation
+cannonBalls = pygame.sprite.Group()
 
 while gameRunning: 
 
@@ -63,6 +97,8 @@ while gameRunning:
     gameWindow.blit(gameBackground, (0, 0))
     fort.drawFort()
     fort.fireBall()
+    cannonBalls.update()
+    cannonBalls.draw(gameWindow)
 
     # Events handler: #
     for event in pygame.event.get():
