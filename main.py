@@ -31,6 +31,8 @@ handleFPS = pygame.time.Clock()
 
 gameBackground = pygame.image.load('assets/Background.png').convert_alpha()
 fortUndamaged = pygame.image.load('assets/Fort.png').convert_alpha()
+fortDamaged = pygame.image.load('assets/Fort_Damaged.png').convert_alpha()
+fortHeavilyDamaged = pygame.image.load('assets/Fort_Heavily_Damaged.png').convert_alpha()
 cannonBall = pygame.image.load('assets/Ball.png').convert_alpha()
 ballWidth = cannonBall.get_width()
 ballHeight = cannonBall.get_height()
@@ -58,7 +60,7 @@ for enemy in enemyTypes:
 # Game Classes: #
 
 class Fort():
-    def __init__(self, image, x, y, scale):
+    def __init__(self, image, secondImage, thirdImage, x, y, scale):
         self.health = 1000
         self.maxHealth = self.health
         self.fired = False
@@ -67,6 +69,8 @@ class Fort():
         width = image.get_width()
         height = image.get_height()
         self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        self.secondImage = pygame.transform.scale(secondImage, (int(width * scale), int(height * scale)))
+        self.thirdImage = pygame.transform.scale(thirdImage, (int(width * scale), int(height * scale)))
         self.rect = self.image.get_rect()
         self.rect.x = x 
         self.rect.y = y
@@ -76,7 +80,6 @@ class Fort():
         xDistance = (position[0] - self.rect.midleft[0])
         yDistance = -(position[1] - self.rect.midleft[1])
         self.angle = math.degrees(math.atan2(yDistance, xDistance))
-        pygame.draw.line(gameWindow, (255, 255, 255), (self.rect.midleft[0], self.rect.midleft[1]), (position))
         if (pygame.mouse.get_pressed()[0] and self.fired == False):
             ball = Ball(cannonBall, self.rect.midleft[0], self.rect.midleft[1], self.angle)
             cannonBalls.add(ball)
@@ -86,6 +89,12 @@ class Fort():
 
 
     def drawFort(self):
+        if(self.health <= 250):
+            self.image = self.thirdImage
+        elif(self.health <= 500):
+            self.image = self.secondImage
+        else:
+            self.image = self.image
         gameWindow.blit(self.image, self.rect)
 
 class Ball(pygame.sprite.Sprite):
@@ -100,11 +109,26 @@ class Ball(pygame.sprite.Sprite):
         self.deltaX = math.cos(self.angle) * self.speed
         self.deltaY = -(math.sin(self.angle) * self.speed)
 
+
     def update(self):
         if(self.rect.right < 0 or self.rect.left > screenWidth or self.rect.bottom < 0 or self.rect.top > screenHeight):
             self.kill()
         self.rect.x += self.deltaX
         self.rect.y += self.deltaY
+
+class Crosshair():
+    def __init__(self, scale):
+        crosshair = pygame.image.load('assets/Crosshair.png')
+        cWidth = crosshair.get_width()
+        cHeight = crosshair.get_height()
+        self.crosshair = pygame.transform.scale(crosshair, (int(cWidth * scale), (int(cHeight * scale))))
+        self.rect = self.crosshair.get_rect()
+        pygame.mouse.set_visible(False)
+        
+    def drawCrosshair(self):
+        position = pygame.mouse.get_pos()
+        self.rect.center = (position[0], position[1])
+        gameWindow.blit(self.crosshair, self.rect)
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, health, animationList, x, y, speed):
@@ -112,6 +136,8 @@ class Enemy(pygame.sprite.Sprite):
         self.alive = True
         self.speed = speed
         self.health = health
+        self.lastAttack = pygame.time.get_ticks()
+        self.attackCooldown = 2000
         self.animationList = animationList
         self.frameIndex = 0
         self.action = 0
@@ -132,6 +158,13 @@ class Enemy(pygame.sprite.Sprite):
 
             if(self.action == 0):
                 self.rect.x += self.speed
+
+            if(self.action == 1):
+                if(pygame.time.get_ticks() - self.lastAttack > self.attackCooldown):
+                    fort.health -= 25
+                    if(fort.health < 0):
+                        fort.health = 0
+                    self.lastAttack = pygame.time.get_ticks()   
 
             if(self.health <= 0):
                 fort.money += 50
@@ -164,7 +197,8 @@ class Enemy(pygame.sprite.Sprite):
 
 # Game Loop: #
 
-fort = Fort(fortUndamaged, 500, 235, 3) # Fort Creation
+fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 235, 3) # Fort Creation
+crosshair = Crosshair(1.5)
 cannonBalls = pygame.sprite.Group()
 gameEnemies = pygame.sprite.Group()
 enemyTank = Enemy(enemyHealth[0], enemyAnimations[0], -100, 499, 1)
@@ -176,6 +210,7 @@ while gameRunning:
     gameWindow.blit(gameBackground, (0, 0))
     fort.drawFort()
     fort.fireBall()
+    crosshair.drawCrosshair()
     gameEnemies.update()
     cannonBalls.update()
     cannonBalls.draw(gameWindow)
