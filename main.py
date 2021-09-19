@@ -50,7 +50,7 @@ for enemy in enemyTypes:
             image = pygame.image.load(f'assets/{enemy}/{animation}/{i}.png').convert_alpha()
             enemyWidth = image.get_width()
             enemyHeight = image.get_height()
-            image = pygame.transform.scale(image, (int(enemyWidth * 0.2), int(enemyHeight * 0.2)))
+            image = pygame.transform.scale(image, (int(enemyWidth * 0.15), int(enemyHeight * 0.15)))
             tempList.append(image)
         animationList.append(tempList)
         enemyAnimations.append(animationList)
@@ -115,15 +115,18 @@ class Enemy(pygame.sprite.Sprite):
         self.action = 0
         self.updateTime = pygame.time.get_ticks()
         self.image = self.animationList[self.action][self.frameIndex]
-        self.rect = pygame.Rect(0, 0, 85, 65)
+        self.rect = pygame.Rect(0, 0, 65, 48)
         self.rect.x = x
         self.rect.y = y
 
 
     def update(self):
+        if(self.rect.right > fort.rect.left):
+            print("lol")
+        self.rect.x += self.speed
         self.updateAnimation()
         pygame.draw.rect(gameWindow, (255, 255, 255), self.rect, 1)
-        gameWindow.blit(self.image, (self.rect.x, self.rect.y - 20))
+        gameWindow.blit(self.image, (self.rect.x, self.rect.y - 16))
 
     def updateAnimation(self):
         animationTime = 100
@@ -141,7 +144,7 @@ class Enemy(pygame.sprite.Sprite):
 fort = Fort(fortUndamaged, 500, 235, 3) # Fort Creation
 cannonBalls = pygame.sprite.Group()
 gameEnemies = pygame.sprite.Group()
-enemyTank = Enemy(enemyHealth[0], enemyAnimations[0], 200, 300, 1)
+enemyTank = Enemy(enemyHealth[0], enemyAnimations[0], -100, 499, 1)
 gameEnemies.add(enemyTank)
 
 while gameRunning: 
