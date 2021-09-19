@@ -115,14 +115,15 @@ class Enemy(pygame.sprite.Sprite):
         self.action = 0
         self.updateTime = pygame.time.get_ticks()
         self.image = self.animationList[self.action][self.frameIndex]
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(0, 0, 85, 65)
         self.rect.x = x
         self.rect.y = y
 
 
     def update(self):
         self.updateAnimation()
-        gameWindow.blit(self.image, self.rect)
+        pygame.draw.rect(gameWindow, (255, 255, 255), self.rect, 1)
+        gameWindow.blit(self.image, (self.rect.x, self.rect.y - 20))
 
     def updateAnimation(self):
         animationTime = 100
