@@ -38,7 +38,7 @@ cannonBall = pygame.transform.scale(cannonBall, (int(ballWidth * 0.4), (int(ball
 
 enemyAnimations = []
 enemyTypes = ['Tank']
-enemyHealth = [100]
+enemyHealth = [50]
 animationTypes = ['Move', 'Attack', 'Explosion']
 
 for enemy in enemyTypes:
@@ -62,6 +62,8 @@ class Fort():
         self.health = 1000
         self.maxHealth = self.health
         self.fired = False
+        self.money = 0
+        self.kills = 0
         width = image.get_width()
         height = image.get_height()
         self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
@@ -121,11 +123,23 @@ class Enemy(pygame.sprite.Sprite):
 
 
     def update(self):
-        if(self.rect.right > fort.rect.left):
-            print("lol")
-        self.rect.x += self.speed
+        if(self.alive):
+            if(pygame.sprite.spritecollide(self, cannonBalls, True)):
+                self.health -= 25
+
+            if(self.rect.right > fort.rect.left):
+                self.updateAction(1)
+
+            if(self.action == 0):
+                self.rect.x += self.speed
+
+            if(self.health <= 0):
+                fort.money += 50
+                fort.kills += 1
+                self.updateAction(2)
+                self.alive = False
+
         self.updateAnimation()
-        pygame.draw.rect(gameWindow, (255, 255, 255), self.rect, 1)
         gameWindow.blit(self.image, (self.rect.x, self.rect.y - 16))
 
     def updateAnimation(self):
@@ -135,8 +149,17 @@ class Enemy(pygame.sprite.Sprite):
             self.updateTime = pygame.time.get_ticks()
             self.frameIndex += 1
         if(self.frameIndex >= len(self.animationList[self.action])):
-            self.frameIndex = 0
+            if(self.action == 2):
+                self.frameIndex = len(self.animationList[self.action]) - 1
+                pass
+            else:
+                self.frameIndex = 0
 
+    def updateAction(self, newAction):
+        if(newAction != self.action):
+            self.action = newAction
+            self.frameIndex = 0
+            self.updateTime = pygame.time.get_ticks()
 
 
 # Game Loop: #
