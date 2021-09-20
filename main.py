@@ -10,6 +10,7 @@
 
 import pygame
 import math
+import random
 
 # Pygame Initialization: #
 
@@ -27,6 +28,15 @@ pygame.display.set_caption("Fort Kruz:")
 
 handleFPS = pygame.time.Clock()
 
+# Game Variables: #
+
+gameLevel = 1
+levelDifficulty = 0
+gameDifficulty = 1000
+enemyTimer = 2000
+lastEnemy = pygame.time.get_ticks()
+enemiesAlive = 0
+
 # Assets loading: #
 
 gameBackground = pygame.image.load('assets/Background.png').convert_alpha()
@@ -37,10 +47,9 @@ cannonBall = pygame.image.load('assets/Ball.png').convert_alpha()
 ballWidth = cannonBall.get_width()
 ballHeight = cannonBall.get_height()
 cannonBall = pygame.transform.scale(cannonBall, (int(ballWidth * 0.4), (int(ballHeight * 0.4))))
-
 enemyAnimations = []
-enemyTypes = ['Tank']
-enemyHealth = [50]
+enemyTypes = ['Tank', 'Heavy',]
+enemyHealth = [50, 100]
 animationTypes = ['Move', 'Attack', 'Explosion']
 
 for enemy in enemyTypes:
@@ -55,7 +64,8 @@ for enemy in enemyTypes:
             image = pygame.transform.scale(image, (int(enemyWidth * 0.15), int(enemyHeight * 0.15)))
             tempList.append(image)
         animationList.append(tempList)
-        enemyAnimations.append(animationList)
+    enemyAnimations.append(animationList)
+
 
 # Game Classes: #
 
@@ -201,8 +211,6 @@ fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 235, 3) # Fort 
 crosshair = Crosshair(1.5)
 cannonBalls = pygame.sprite.Group()
 gameEnemies = pygame.sprite.Group()
-enemyTank = Enemy(enemyHealth[0], enemyAnimations[0], -100, 499, 1)
-gameEnemies.add(enemyTank)
 
 while gameRunning: 
 
@@ -211,9 +219,18 @@ while gameRunning:
     fort.drawFort()
     fort.fireBall()
     crosshair.drawCrosshair()
-    gameEnemies.update()
     cannonBalls.update()
     cannonBalls.draw(gameWindow)
+
+    gameEnemies.update()
+    if(levelDifficulty < gameDifficulty):
+        if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
+            randomEnemy = random.randint(0, len(enemyTypes) - 1)
+            gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 499, 1)
+            print(randomEnemy)
+            gameEnemies.add(gameEnemy)
+            lastEnemy = pygame.time.get_ticks()
+            levelDifficulty += enemyHealth[randomEnemy]
 
     # Events handler: #
     for event in pygame.event.get():
