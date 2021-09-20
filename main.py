@@ -33,6 +33,9 @@ handleFPS = pygame.time.Clock()
 gameLevel = 1
 levelDifficulty = 0
 gameDifficulty = 1000
+difficultyMultiplier = 2
+gameOver = False
+nextLevel = False
 enemyTimer = 2000
 lastEnemy = pygame.time.get_ticks()
 enemiesAlive = 0
@@ -49,7 +52,7 @@ ballHeight = cannonBall.get_height()
 cannonBall = pygame.transform.scale(cannonBall, (int(ballWidth * 0.4), (int(ballHeight * 0.4))))
 enemyAnimations = []
 enemyTypes = ['Tank', 'Heavy',]
-enemyHealth = [50, 100]
+enemyHealth = [50, 150]
 animationTypes = ['Move', 'Attack', 'Explosion']
 
 for enemy in enemyTypes:
@@ -66,6 +69,14 @@ for enemy in enemyTypes:
         animationList.append(tempList)
     enemyAnimations.append(animationList)
 
+# Game Text: #
+
+gameFont = pygame.font.SysFont('Impact', 20)
+secondGameFont = pygame.font.SysFont('Impact', 50)
+
+def drawText(text, font, color, x, y):
+    textImage = font.render(text, True, color)
+    gameWindow.blit(textImage, (x, y))
 
 # Game Classes: #
 
@@ -115,7 +126,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.angle = math.radians(angle)
-        self.speed = 10
+        self.speed = 5
         self.deltaX = math.cos(self.angle) * self.speed
         self.deltaY = -(math.sin(self.angle) * self.speed)
 
@@ -194,7 +205,7 @@ class Enemy(pygame.sprite.Sprite):
         if(self.frameIndex >= len(self.animationList[self.action])):
             if(self.action == 2):
                 self.frameIndex = len(self.animationList[self.action]) - 1
-                pass
+                self.kill()
             else:
                 self.frameIndex = 0
 
@@ -222,15 +233,41 @@ while gameRunning:
     cannonBalls.update()
     cannonBalls.draw(gameWindow)
 
+    # Enemy Spawning: #
+
     gameEnemies.update()
     if(levelDifficulty < gameDifficulty):
         if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
-            randomEnemy = random.randint(0, len(enemyTypes) - 1)
+            if(gameLevel == 1):
+                randomEnemy = random.randint(0, len(enemyTypes) - 2)
+            elif(gameLevel == 2):
+                randomEnemy = random.randint(0, len(enemyTypes) - 1)
+            else:
+                randomEnemy = random.randint(0, len(enemyTypes) - 1)
+
             gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 499, 1)
-            print(randomEnemy)
             gameEnemies.add(gameEnemy)
             lastEnemy = pygame.time.get_ticks()
             levelDifficulty += enemyHealth[randomEnemy]
+
+    if(levelDifficulty >= gameDifficulty):
+        enemiesAlive = 0
+        for enemy in gameEnemies:
+            if enemy.alive == True:
+                enemiesAlive += 1
+        if (enemiesAlive == 0 and nextLevel == False):
+            nextLevel = True
+            levelResetTime = pygame.time.get_ticks()
+
+    if nextLevel == True:
+        drawText('LEVEL COMPLETE', secondGameFont, (204, 0, 0), 260, 200)
+        if(pygame.time.get_ticks() - levelResetTime > 1500):
+            nextLevel = False
+            gameLevel += 1
+            lastEnemy = pygame.time.get_ticks()
+            gameDifficulty *= difficultyMultiplier
+            levelDifficulty = 0
+            gameEnemies.empty()
 
     # Events handler: #
     for event in pygame.event.get():
