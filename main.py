@@ -87,6 +87,8 @@ def showStats():
     drawText('High Score: ' + str(highScore), gameFont, (0, 153, 0), 180, 30)
     drawText('Level: ' + str(gameLevel), gameFont, (0, 153, 0), 400, 10)
     drawText('Health: ' + str(fort.health) + "/" + str(fort.maxHealth), gameFont, (0, 153, 0), 500, 10)
+    drawText('500', gameFont, (0, 153, 0), 715, 40)
+    drawText('1000', gameFont, (0, 153, 0), 715, 120)
 
 # Game Classes: #
 
@@ -268,7 +270,7 @@ class Button():
 fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 235, 4) # Fort Creation
 crosshair = Crosshair(1.5)
 buttonRepair = Button(700, -20, repairButton, 2)
-buttonArmour = Button(700, 20, armourButton, 2)
+buttonArmour = Button(700, 60, armourButton, 2)
 cannonBalls = pygame.sprite.Group()
 gameEnemies = pygame.sprite.Group()
 
