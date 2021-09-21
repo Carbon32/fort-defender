@@ -39,6 +39,7 @@ nextLevel = False
 enemyTimer = 2000
 lastEnemy = pygame.time.get_ticks()
 enemiesAlive = 0
+highScore = 0
 
 # Assets loading: #
 
@@ -77,6 +78,13 @@ secondGameFont = pygame.font.SysFont('Impact', 50)
 def drawText(text, font, color, x, y):
     textImage = font.render(text, True, color)
     gameWindow.blit(textImage, (x, y))
+
+def showStats():
+    drawText('Money: ' + str(fort.money), gameFont, (0, 153, 0), 10, 10)
+    drawText('Score: ' + str(fort.kills), gameFont, (0, 153, 0), 180, 10)
+    drawText('High Score: ' + str(highScore), gameFont, (0, 153, 0), 180, 30)
+    drawText('Level: ' + str(gameLevel), gameFont, (0, 153, 0), 400, 10)
+    drawText('Health: ' + str(fort.health) + "/" + str(fort.maxHealth), gameFont, (0, 153, 0), 500, 10)
 
 # Game Classes: #
 
@@ -182,7 +190,7 @@ class Enemy(pygame.sprite.Sprite):
 
             if(self.action == 1):
                 if(pygame.time.get_ticks() - self.lastAttack > self.attackCooldown):
-                    fort.health -= 25
+                    fort.health -= 50
                     if(fort.health < 0):
                         fort.health = 0
                     self.lastAttack = pygame.time.get_ticks()   
@@ -269,6 +277,7 @@ while gameRunning:
             levelDifficulty = 0
             gameEnemies.empty()
 
+    showStats()
     # Events handler: #
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
