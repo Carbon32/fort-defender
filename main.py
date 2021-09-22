@@ -40,6 +40,12 @@ enemyTimer = 2000
 lastEnemy = pygame.time.get_ticks()
 enemiesAlive = 0
 highScore = 0
+towerPositions = [
+[492, 315],
+[600, 280],
+[492, 460],
+[715, 460]
+]
 
 # Assets loading: #
 
@@ -61,11 +67,12 @@ towerHeavilyDamaged = pygame.image.load('assets/Tower_Heavily_Damaged.png').conv
 cannonBall = pygame.image.load('assets/Ball.png').convert_alpha()
 ballWidth = cannonBall.get_width()
 ballHeight = cannonBall.get_height()
-cannonBall = pygame.transform.scale(cannonBall, (int(ballWidth * 0.4), (int(ballHeight * 0.4))))
+cannonBall = pygame.transform.scale(cannonBall, (int(ballWidth * 0.2), (int(ballHeight * 0.2))))
 
 # Buttons: #
 repairButton = pygame.image.load('assets/Repair.png')
 armourButton = pygame.image.load('assets/Armour.png')
+towerButton = pygame.image.load('assets/Tower_Button.png')
 
 # Enemy: #
 enemyAnimations = []
@@ -104,6 +111,7 @@ def showStats():
     drawText('Health: ' + str(fort.health) + "/" + str(fort.maxHealth), gameFont, (0, 153, 0), 500, 10)
     drawText('500', gameFont, (0, 153, 0), 715, 40)
     drawText('1000', gameFont, (0, 153, 0), 715, 120)
+    drawText('2000', gameFont, (0, 153, 0), 640, 120)
 
 # Game Classes: #
 
@@ -112,7 +120,7 @@ class Fort():
         self.health = 1000
         self.maxHealth = self.health
         self.fired = False
-        self.money = 0
+        self.money = 50000
         self.kills = 0
         width = image.get_width()
         height = image.get_height()
@@ -127,9 +135,9 @@ class Fort():
     def fireBall(self):
         position = pygame.mouse.get_pos()
         xDistance = (position[0] - self.rect.midleft[0])
-        yDistance = -(position[1] - self.rect.midleft[1])
+        yDistance = -(position[1] - self.rect.midleft[1]-100)
         self.angle = math.degrees(math.atan2(yDistance, xDistance))
-        if (pygame.mouse.get_pressed()[0] and self.fired == False and position[1] > 100):
+        if (pygame.mouse.get_pressed()[0] and self.fired == False and position[1] > 150):
             ball = Ball(cannonBall, self.rect.midleft[0], self.rect.midleft[1], self.angle)
             cannonBalls.add(ball)
             self.fired = True
@@ -157,6 +165,51 @@ class Fort():
         if(self.money >= 1000):
             self.maxHealth += 500
             self.money -= 1000
+
+class Tower(pygame.sprite.Sprite):
+    def __init__(self, firstImage, secondImage, thirdImage, x, y, scale):
+        pygame.sprite.Sprite.__init__(self)
+        self.ready = False
+        self.angle = 0
+        self.lastShot = pygame.time.get_ticks()
+        width = image.get_width()
+        height = image.get_height()
+        self.image = firstImage
+        self.firstImage = pygame.transform.scale(firstImage, (int(width * scale), int(height * scale)))
+        self.secondImage = pygame.transform.scale(secondImage, (int(width * scale), int(height * scale)))
+        self.thirdImage = pygame.transform.scale(thirdImage, (int(width * scale), int(height * scale)))
+        self.rect = self.image.get_rect()
+        self.rect.x = x 
+        self.rect.y = y
+
+    def update(self, gameEnemies):
+        self.ready = False
+        for enemy in gameEnemies:
+            if(enemy.alive):
+                targetX, targetY = enemy.rect.midbottom
+                self.ready = True
+                break
+
+        if(self.ready):
+            xDistance = (targetX - self.rect.midleft[0])
+            yDistance = -(targetY - self.rect.midleft[1])
+            self.angle = math.degrees(math.atan2(yDistance, xDistance))
+            shotCooldown = 1000
+            if(pygame.time.get_ticks() - self.lastShot > shotCooldown):
+                self.lastShot = pygame.time.get_ticks()
+                ball = Ball(cannonBall, self.rect.midleft[0], self.rect.midleft[1]-125, self.angle)
+                cannonBalls.add(ball)
+
+        if(fort.health <= 250):
+            self.image = self.thirdImage
+        elif(fort.health <= 500):
+            self.image = self.secondImage
+        else:
+            self.image = self.firstImage
+        gameWindow.blit(self.image, self.rect)
+
+
+
 
 
 class Ball(pygame.sprite.Sprite):
@@ -291,10 +344,12 @@ crosshair = Crosshair(1.5)
 # Game Buttons: #
 buttonRepair = Button(700, -20, repairButton, 2)
 buttonArmour = Button(700, 60, armourButton, 2)
+buttonTower = Button(630, 60, towerButton, 2)
 
 # Game Groups: #
 cannonBalls = pygame.sprite.Group()
 gameEnemies = pygame.sprite.Group()
+gameTowers = pygame.sprite.Group()
 
 while gameRunning: 
 
@@ -309,6 +364,8 @@ while gameRunning:
     # Enemy Spawning: #
 
     gameEnemies.update()
+    gameTowers.draw(gameWindow)
+    gameTowers.update(gameEnemies)
     if(levelDifficulty < gameDifficulty):
         if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
             if(gameLevel == 1):
@@ -345,9 +402,16 @@ while gameRunning:
     showStats()
     if(buttonRepair.drawButton()):
         fort.repairFort()
+
     if(buttonArmour.drawButton()):
         fort.upgradeArmour()
-        pass
+
+    if(buttonTower.drawButton()):
+        if(fort.money >= 5000 and len(gameTowers) < 4):
+            tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1], 1)
+            gameTowers.add(tower)
+            fort.money -= 5000
+
     # Events handler: #
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
