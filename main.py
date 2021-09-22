@@ -39,7 +39,6 @@ nextLevel = False
 enemyTimer = 2000
 lastEnemy = pygame.time.get_ticks()
 enemiesAlive = 0
-highScore = 0
 towerPositions = [
 [492, 315],
 [600, 280],
@@ -106,7 +105,6 @@ def drawText(text, font, color, x, y):
 def showStats():
     drawText('Money: ' + str(fort.money), gameFont, (0, 153, 0), 10, 10)
     drawText('Score: ' + str(fort.kills), gameFont, (0, 153, 0), 180, 10)
-    drawText('High Score: ' + str(highScore), gameFont, (0, 153, 0), 180, 30)
     drawText('Level: ' + str(gameLevel), gameFont, (0, 153, 0), 400, 10)
     drawText('Health: ' + str(fort.health) + "/" + str(fort.maxHealth), gameFont, (0, 153, 0), 500, 10)
     drawText('500', gameFont, (0, 153, 0), 715, 40)
@@ -120,7 +118,7 @@ class Fort():
         self.health = 1000
         self.maxHealth = self.health
         self.fired = False
-        self.money = 50000
+        self.money = 0
         self.kills = 0
         width = image.get_width()
         height = image.get_height()
@@ -209,16 +207,13 @@ class Tower(pygame.sprite.Sprite):
         gameWindow.blit(self.image, self.rect)
 
 
-
-
-
 class Ball(pygame.sprite.Sprite):
     def __init__(self, image, x, y, angle):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
-        self.rect.y = y+100
+        self.rect.y = y+150
         self.angle = math.radians(angle)
         self.speed = 5
         self.deltaX = math.cos(self.angle) * self.speed
@@ -354,63 +349,84 @@ gameTowers = pygame.sprite.Group()
 while gameRunning: 
 
     handleFPS.tick(60)
-    gameWindow.blit(gameBackground, (0, 0))
-    fort.drawFort()
-    fort.fireBall()
-    crosshair.drawCrosshair()
-    cannonBalls.update()
-    cannonBalls.draw(gameWindow)
+    if(gameOver == False):
+        gameWindow.blit(gameBackground, (0, 0))
+        fort.drawFort()
+        fort.fireBall()
+        crosshair.drawCrosshair()
+        cannonBalls.update()
+        cannonBalls.draw(gameWindow)
 
-    # Enemy Spawning: #
+        
+        showStats()
+        if(buttonRepair.drawButton()):
+            fort.repairFort()
 
-    gameEnemies.update()
-    gameTowers.draw(gameWindow)
-    gameTowers.update(gameEnemies)
-    if(levelDifficulty < gameDifficulty):
-        if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
-            if(gameLevel == 1):
-                randomEnemy = random.randint(0, len(enemyTypes) - 2)
-            elif(gameLevel == 2):
-                randomEnemy = random.randint(0, len(enemyTypes) - 1)
-            else:
-                randomEnemy = random.randint(0, len(enemyTypes) - 1)
+        if(buttonArmour.drawButton()):
+            fort.upgradeArmour()
 
-            gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 499, 1)
-            gameEnemies.add(gameEnemy)
-            lastEnemy = pygame.time.get_ticks()
-            levelDifficulty += enemyHealth[randomEnemy]
+        if(buttonTower.drawButton()):
+            if(fort.money >= 5000 and len(gameTowers) < 4):
+                tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1], 1)
+                gameTowers.add(tower)
+                fort.money -= 5000
 
-    if(levelDifficulty >= gameDifficulty):
-        enemiesAlive = 0
-        for enemy in gameEnemies:
-            if enemy.alive == True:
-                enemiesAlive += 1
-        if (enemiesAlive == 0 and nextLevel == False):
-            nextLevel = True
-            levelResetTime = pygame.time.get_ticks()
+        # Enemy Spawning: #
 
-    if nextLevel == True:
-        drawText('LEVEL COMPLETE', secondGameFont, (204, 0, 0), 260, 200)
-        if(pygame.time.get_ticks() - levelResetTime > 1500):
-            nextLevel = False
-            gameLevel += 1
-            lastEnemy = pygame.time.get_ticks()
-            gameDifficulty *= difficultyMultiplier
+        gameEnemies.update()
+        gameTowers.draw(gameWindow)
+        gameTowers.update(gameEnemies)
+        if(levelDifficulty < gameDifficulty):
+            if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
+                if(gameLevel == 1):
+                    randomEnemy = random.randint(0, len(enemyTypes) - 2)
+                elif(gameLevel == 2):
+                    randomEnemy = random.randint(0, len(enemyTypes) - 1)
+                else:
+                    randomEnemy = random.randint(0, len(enemyTypes) - 1)
+
+                gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 499, 1)
+                gameEnemies.add(gameEnemy)
+                lastEnemy = pygame.time.get_ticks()
+                levelDifficulty += enemyHealth[randomEnemy]
+
+        if(levelDifficulty >= gameDifficulty):
+            enemiesAlive = 0
+            for enemy in gameEnemies:
+                if enemy.alive == True:
+                    enemiesAlive += 1
+            if (enemiesAlive == 0 and nextLevel == False):
+                nextLevel = True
+                levelResetTime = pygame.time.get_ticks()
+
+        if(nextLevel == True):
+            drawText('LEVEL COMPLETE', secondGameFont, (204, 0, 0), 260, 200)
+            if(pygame.time.get_ticks() - levelResetTime > 1500):
+                nextLevel = False
+                gameLevel += 1
+                lastEnemy = pygame.time.get_ticks()
+                gameDifficulty *= difficultyMultiplier
+                levelDifficulty = 0
+                gameEnemies.empty()
+        if(fort.health <= 0):
+            gameOver = True
+    else:
+        drawText('GAME OVER', secondGameFont, (204, 0, 0), 260, 200)
+        drawText('PRESS "SPACE" TO RESTART', secondGameFont, (204, 0, 0), 150, 280)
+        pygame.mouse.set_visible(True)
+        key = pygame.key.get_pressed()
+        if(key[pygame.K_SPACE]):
+            gameOver = False
+            level = 1
+            gameDifficulty = 1000
             levelDifficulty = 0
-            gameEnemies.empty()
-
-    showStats()
-    if(buttonRepair.drawButton()):
-        fort.repairFort()
-
-    if(buttonArmour.drawButton()):
-        fort.upgradeArmour()
-
-    if(buttonTower.drawButton()):
-        if(fort.money >= 5000 and len(gameTowers) < 4):
-            tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1], 1)
-            gameTowers.add(tower)
-            fort.money -= 5000
+            lastEnemy = pygame.time.get_ticks()
+            gameEnemes.empty()
+            gameTowers.empty()
+            fort.score = 0
+            fort.health = 1000
+            fort.money = 0
+            pygame.mouse.set_visible(False)
 
     # Events handler: #
     for event in pygame.event.get():
