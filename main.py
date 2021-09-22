@@ -43,16 +43,31 @@ highScore = 0
 
 # Assets loading: #
 
+
+# Background: # 
 gameBackground = pygame.image.load('assets/Background.png').convert_alpha()
+
+# Fort: # 
 fortUndamaged = pygame.image.load('assets/Fort.png').convert_alpha()
 fortDamaged = pygame.image.load('assets/Fort_Damaged.png').convert_alpha()
 fortHeavilyDamaged = pygame.image.load('assets/Fort_Heavily_Damaged.png').convert_alpha()
+
+# Tower: #
+towerUndamaged = pygame.image.load('assets/Tower.png').convert_alpha()
+towerDamaged = pygame.image.load('assets/Tower_Damaged.png').convert_alpha()
+towerHeavilyDamaged = pygame.image.load('assets/Tower_Heavily_Damaged.png').convert_alpha()
+
+# Cannon Ball: #
 cannonBall = pygame.image.load('assets/Ball.png').convert_alpha()
 ballWidth = cannonBall.get_width()
 ballHeight = cannonBall.get_height()
 cannonBall = pygame.transform.scale(cannonBall, (int(ballWidth * 0.4), (int(ballHeight * 0.4))))
+
+# Buttons: #
 repairButton = pygame.image.load('assets/Repair.png')
 armourButton = pygame.image.load('assets/Armour.png')
+
+# Enemy: #
 enemyAnimations = []
 enemyTypes = ['Tank', 'Heavy',]
 enemyHealth = [50, 150]
@@ -73,10 +88,10 @@ for enemy in enemyTypes:
     enemyAnimations.append(animationList)
 
 # Game Text: #
-
 gameFont = pygame.font.SysFont('Impact', 20)
 secondGameFont = pygame.font.SysFont('Impact', 50)
 
+# Functions (Related to Game Text): #
 def drawText(text, font, color, x, y):
     textImage = font.render(text, True, color)
     gameWindow.blit(textImage, (x, y))
@@ -267,10 +282,17 @@ class Button():
 
 # Game Loop: #
 
-fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 235, 4) # Fort Creation
+# Fort Creation: #
+fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 235, 4)
+
+# Game Crosshair: #
 crosshair = Crosshair(1.5)
+
+# Game Buttons: #
 buttonRepair = Button(700, -20, repairButton, 2)
 buttonArmour = Button(700, 60, armourButton, 2)
+
+# Game Groups: #
 cannonBalls = pygame.sprite.Group()
 gameEnemies = pygame.sprite.Group()
 
