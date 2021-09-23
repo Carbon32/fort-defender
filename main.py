@@ -51,6 +51,7 @@ towerPositions = [
 
 # Background: # 
 gameBackground = pygame.image.load('assets/Background.png').convert_alpha()
+gameGrass = pygame.image.load('assets/Grass.png').convert_alpha()
 
 # Fort: # 
 fortCannon = pygame.image.load('assets/Cannon.png').convert_alpha()
@@ -333,7 +334,7 @@ class Button():
 # Game Loop: #
 
 # Fort Creation: #
-fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 235, 4)
+fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 270, 4)
 
 # Game Crosshair: #
 crosshair = Crosshair(1.5)
@@ -361,10 +362,11 @@ while gameRunning:
         mPositions = pygame.mouse.get_pos()
         cRect = fortCannon.get_rect()
         cRect.x = 530
-        cRect.y = 320
-        angle = math.degrees(math.atan2(mPositions[1], mPositions[0]+1200))
+        cRect.y = 350
+        angle = math.degrees(math.atan2(mPositions[1], mPositions[0]+1200)) # Pff, quick fix
         gameCannon = pygame.transform.rotate(fortCannon, angle)
         gameWindow.blit(gameCannon, cRect)
+        gameWindow.blit(gameGrass, (0, 30))
         crosshair.drawCrosshair()
         showStats()
 
