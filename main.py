@@ -53,6 +53,7 @@ towerPositions = [
 gameBackground = pygame.image.load('assets/Background.png').convert_alpha()
 
 # Fort: # 
+fortCannon = pygame.image.load('assets/Cannon.png').convert_alpha()
 fortUndamaged = pygame.image.load('assets/Fort.png').convert_alpha()
 fortDamaged = pygame.image.load('assets/Fort_Damaged.png').convert_alpha()
 fortHeavilyDamaged = pygame.image.load('assets/Fort_Heavily_Damaged.png').convert_alpha()
@@ -135,7 +136,7 @@ class Fort():
         xDistance = (position[0] - self.rect.midleft[0]+50)
         yDistance = -(position[1] - self.rect.midleft[1]+200)
         self.angle = math.degrees(math.atan2(yDistance, xDistance))
-        if (pygame.mouse.get_pressed()[0] and self.fired == False and position[1] > 150):
+        if (pygame.mouse.get_pressed()[0] and self.fired == False and position[1] > 300 and position[0] < 280):
             ball = Ball(cannonBall, self.rect.midleft[0], self.rect.midleft[1], self.angle)
             cannonBalls.add(ball)
             self.fired = True
@@ -175,7 +176,7 @@ class Tower(pygame.sprite.Sprite):
         self.image = firstImage
         self.firstImage = pygame.transform.scale(firstImage, (int(width * scale), int(height * scale)))
         self.secondImage = pygame.transform.scale(secondImage, (int(width * scale), int(height * scale)))
-        self.thirdImage = pygame.transform.scale(thirdImage, (int(width * scale), int(height * scale)))
+        self.thirdImage = pygame.transform.scale(thirdImage, (int(width * scale), int(height * scale))) 
         self.rect = self.image.get_rect()
         self.rect.x = x 
         self.rect.y = y
@@ -265,6 +266,7 @@ class Enemy(pygame.sprite.Sprite):
 
             if(self.rect.right > fort.rect.left):
                 self.updateAction(1)
+                self.health -= 0.1
 
             if(self.action == 0):
                 self.rect.x += self.speed
@@ -349,13 +351,21 @@ gameTowers = pygame.sprite.Group()
 while gameRunning: 
 
     handleFPS.tick(60)
+    print(handleFPS)
     if(gameOver == False):
         gameWindow.blit(gameBackground, (0, 0))
-        crosshair.drawCrosshair()
         fort.drawFort()
         fort.fireBall()
         cannonBalls.update()
         cannonBalls.draw(gameWindow)
+        mPositions = pygame.mouse.get_pos()
+        cRect = fortCannon.get_rect()
+        cRect.x = 530
+        cRect.y = 320
+        angle = math.degrees(math.atan2(mPositions[1], mPositions[0]+1200))
+        gameCannon = pygame.transform.rotate(fortCannon, angle)
+        gameWindow.blit(gameCannon, cRect)
+        crosshair.drawCrosshair()
         showStats()
 
         if(buttonRepair.drawButton()):
