@@ -105,13 +105,13 @@ def drawText(text, font, color, x, y):
     gameWindow.blit(textImage, (x, y))
 
 def showStats():
-    drawText('Money: ' + str(fort.money), gameFont, (0, 153, 0), 10, 10)
-    drawText('Score: ' + str(fort.kills), gameFont, (0, 153, 0), 180, 10)
-    drawText('Level: ' + str(gameLevel), gameFont, (0, 153, 0), 400, 10)
-    drawText('Health: ' + str(fort.health) + "/" + str(fort.maxHealth), gameFont, (0, 153, 0), 500, 10)
-    drawText('500', gameFont, (0, 153, 0), 715, 40)
-    drawText('1000', gameFont, (0, 153, 0), 715, 120)
-    drawText('2000', gameFont, (0, 153, 0), 640, 120)
+    drawText('Money: ' + str(fort.money), gameFont, (0, 153, 0), 10, 80)
+    drawText('Score: ' + str(fort.kills), gameFont, (0, 153, 0), 180, 80)
+    drawText('Level: ' + str(gameLevel), gameFont, (0, 153, 0), 400, 80)
+    drawText('Health: ' + str(fort.health) + "/" + str(fort.maxHealth), gameFont, (0, 153, 0), 500, 80)
+    drawText('500', gameFont, (0, 153, 0), 715, 130)
+    drawText('1000', gameFont, (0, 153, 0), 715, 210)
+    drawText('2000', gameFont, (0, 153, 0), 715, 290)
 
 # Game Classes: #
 
@@ -340,9 +340,9 @@ fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 270, 4)
 crosshair = Crosshair(1.5)
 
 # Game Buttons: #
-buttonRepair = Button(700, -20, repairButton, 2)
-buttonArmour = Button(700, 60, armourButton, 2)
-buttonTower = Button(630, 60, towerButton, 2)
+buttonRepair = Button(700, 60, repairButton, 2)
+buttonArmour = Button(700, 140, armourButton, 2)
+buttonTower = Button(700, 220, towerButton, 2)
 
 # Game Groups: #
 cannonBalls = pygame.sprite.Group()
