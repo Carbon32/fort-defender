@@ -422,7 +422,6 @@ while gameRunning:
             lastEnemy = pygame.time.get_ticks()
             gameEnemies.empty()
             gameTowers.empty()
-            cannonBall.empty()
             fort.score = 0
             fort.health = 1000
             fort.money = 0
