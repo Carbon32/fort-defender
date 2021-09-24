@@ -366,7 +366,6 @@ while gameRunning:
         angle = math.degrees(math.atan2(mPositions[1], mPositions[0]+1200)) # Pff, quick fix
         gameCannon = pygame.transform.rotate(fortCannon, angle)
         gameWindow.blit(gameCannon, cRect)
-        gameWindow.blit(gameGrass, (0, 30))
         crosshair.drawCrosshair()
         showStats()
 
@@ -386,6 +385,7 @@ while gameRunning:
 
         gameEnemies.update()
         gameTowers.draw(gameWindow)
+        gameWindow.blit(gameGrass, (0, 30))
         gameTowers.update(gameEnemies)
         if(levelDifficulty < gameDifficulty):
             if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
@@ -396,7 +396,7 @@ while gameRunning:
                 else:
                     randomEnemy = random.randint(0, len(enemyTypes) - 1)
 
-                gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 499, 1)
+                gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 525, 1)
                 gameEnemies.add(gameEnemy)
                 lastEnemy = pygame.time.get_ticks()
                 levelDifficulty += enemyHealth[randomEnemy]
