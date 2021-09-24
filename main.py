@@ -75,8 +75,8 @@ towerButton = pygame.image.load('assets/Tower_Button.png')
 
 # Enemy: #
 enemyAnimations = []
-enemyTypes = ['Tank', 'Heavy',]
-enemyHealth = [50, 150]
+enemyTypes = ['Tank', 'Heavy', 'Super']
+enemyHealth = [50, 150, 500]
 animationTypes = ['Move', 'Attack', 'Explosion']
 
 for enemy in enemyTypes:
@@ -373,10 +373,10 @@ while gameRunning:
             fort.upgradeArmour()
 
         if(buttonTower.drawButton()):
-            if(fort.money >= 5000 and len(gameTowers) < 4):
+            if(fort.money >= 2000 and len(gameTowers) < 4):
                 tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1], 2)
                 gameTowers.add(tower)
-                fort.money -= 5000
+                fort.money -= 2000
 
         # Enemy Spawning: #
 
@@ -388,9 +388,9 @@ while gameRunning:
         if(levelDifficulty < gameDifficulty):
             if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
                 if(gameLevel == 1):
-                    randomEnemy = random.randint(0, len(enemyTypes) - 2)
+                    randomEnemy = random.randint(0, len(enemyTypes) - 3)
                 elif(gameLevel == 2):
-                    randomEnemy = random.randint(0, len(enemyTypes) - 1)
+                    randomEnemy = random.randint(0, len(enemyTypes) - 2)
                 else:
                     randomEnemy = random.randint(0, len(enemyTypes) - 1)
 
