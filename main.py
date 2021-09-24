@@ -40,10 +40,8 @@ enemyTimer = 2000
 lastEnemy = pygame.time.get_ticks()
 enemiesAlive = 0
 towerPositions = [
-[492, 315],
-[600, 280],
-[492, 460],
-[715, 460]
+[492, 440],
+[520, 183],
 ]
 
 # Assets loading: #
@@ -197,7 +195,7 @@ class Tower(pygame.sprite.Sprite):
             shotCooldown = 1000
             if(pygame.time.get_ticks() - self.lastShot > shotCooldown):
                 self.lastShot = pygame.time.get_ticks()
-                ball = Ball(cannonBall, self.rect.midleft[0], self.rect.midleft[1]-125, self.angle)
+                ball = Ball(cannonBall, self.rect.midleft[0], self.rect.midleft[1]+100, self.angle)
                 cannonBalls.add(ball)
 
         if(fort.health <= 250):
@@ -366,7 +364,6 @@ while gameRunning:
         angle = math.degrees(math.atan2(mPositions[1], mPositions[0]+1200)) # Pff, quick fix
         gameCannon = pygame.transform.rotate(fortCannon, angle)
         gameWindow.blit(gameCannon, cRect)
-        crosshair.drawCrosshair()
         showStats()
 
         if(buttonRepair.drawButton()):
@@ -377,7 +374,7 @@ while gameRunning:
 
         if(buttonTower.drawButton()):
             if(fort.money >= 5000 and len(gameTowers) < 4):
-                tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1], 1)
+                tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1], 2)
                 gameTowers.add(tower)
                 fort.money -= 5000
 
@@ -385,8 +382,9 @@ while gameRunning:
 
         gameEnemies.update()
         gameTowers.draw(gameWindow)
-        gameWindow.blit(gameGrass, (0, 30))
         gameTowers.update(gameEnemies)
+        gameWindow.blit(gameGrass, (0, 30))
+        crosshair.drawCrosshair()
         if(levelDifficulty < gameDifficulty):
             if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
                 if(gameLevel == 1):
