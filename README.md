@@ -7,8 +7,12 @@ This game is based in World War II, the game focuses on a fort really far in the
 
 **Available Tanks:**
 
-![Hi](https://github.com/Carbon32/fort-kruz/blob/main/assets/Tank/Move/0.png?raw=true)
+![Green Tank](https://github.com/Carbon32/fort-kruz/blob/main/assets/Tank/Move/0.png?raw=true)
 
-https://github.com/Carbon32/fort-kruz/blob/main/assets/Heavy/Move/0.png?raw=true
+![Red Tank](https://github.com/Carbon32/fort-kruz/blob/main/assets/Heavy/Move/0.png?raw=true)
 
-https://github.com/Carbon32/fort-kruz/blob/main/assets/Super/Move/0.png?raw=true
+![Blue Tank](https://github.com/Carbon32/fort-kruz/blob/main/assets/Super/Move/0.png?raw=true)
+
+
+
+It took me 10 minutes to figure out how to post pictures...
