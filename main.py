@@ -1,6 +1,6 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
-#                 Fort Kruz, defender video game                              #
+#                 Fort Defender, defender video game                          #
 #                                   based in World War II                     #
 #                                             Developer: Carbon               #
 #                                                                             #
@@ -22,7 +22,7 @@ screenWidth = 800
 screenHeight = 600
 gameRunning = True
 gameWindow = pygame.display.set_mode((screenWidth, screenHeight))
-pygame.display.set_caption("Fort Kruz:")
+pygame.display.set_caption("Fort Defender:")
 
 # Frames per second handler: #
 
