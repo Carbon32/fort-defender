@@ -8,18 +8,36 @@
 # Imports: #
 
 import pygame
+from pygame import mixer
 import math
 import random
 
-# Pygame Initialization: #
+# Pygame & Mixer Initializations: #
 
 pygame.init()
+mixer.init()
 
 # Global Variables: #
 
 windowWidth = 0
 windowHeight = 0
 gameLevel = 1
+nextLevel = False
+levelDifficulty = 0
+gameDifficulty = 1000
+difficultyMultiplier = 2
+enemyTimer = 2000
+lastEnemy = pygame.time.get_ticks()
+enemiesAlive = 0
+gameOver = False
+randomEnemy = 0
+
+# Tower Spawn Positions: #
+
+towerPositions = [
+[600, 440],
+[400, 445],
+]
 
 # Sprite Groups: #
 
@@ -29,22 +47,76 @@ gameTowers = pygame.sprite.Group()
 
 # Engine Functions: #
 
+def changeSpawnTimer(newSpawnTimer : int):
+	global enemyTimer
+	enemyTimer = newSpawnTimer
+
+def changeGameDifficulty(newLevelDifficulty : int, newGameDifficulty : int, newDifficultyMultiplier : int):
+	global levelDifficulty
+	global gameDifficulty
+	global difficultyMultiplier
+	levelDifficulty = newLevelDifficulty
+	gameDifficulty = newGameDifficulty
+	newDifficultyMultiplier = newDifficultyMultiplier
+
 def loadGameImage(path : str, width : int, height : int):
 		image = pygame.image.load(path)
 		image = pygame.transform.scale(image, (width, height))
 		return image
 
-def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface):
-        cannonBalls.update(windowWidth, windowHeight)
-        cannonBalls.draw(engineWindow)
-        gameEnemies.update(engineWindow, fort)
-        gameEnemies.draw(engineWindow)
-        showStats(engineWindow, fort, gameLevel)
+def updateGameTowers(engineWindow : pygame.Surface, fort : pygame.Surface, ballSprite : pygame.Surface):
+	global gameEnemies
+	gameTowers.update(engineWindow, fort, gameEnemies, ballSprite)
+	gameTowers.draw(engineWindow)
 
-def loadGameEnemies(enemyTypes : list, enemyHP : list, anims : list):
+def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, enemyAnimations : list, enemyTypes : list, enemyHealth : list, sound : mixer.Sound):
+		global levelDifficulty
+		global gameDifficulty
+		global lastEnemy
+		global randomEnemy
+		global nextLevel
+		global gameLevel
+		cannonBalls.update(windowWidth, windowHeight)
+		cannonBalls.draw(engineWindow)
+		gameEnemies.update(engineWindow, fort, sound)
+		gameEnemies.draw(engineWindow)
+		showStats(engineWindow, fort, gameLevel)
+		if(levelDifficulty < gameDifficulty):
+			if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
+				if(gameLevel == 1):
+					randomEnemy = random.randint(0, len(enemyTypes) - 3)
+				elif(gameLevel == 2):
+					randomEnemy = random.randint(0, len(enemyTypes) - 2)
+				else:
+					randomEnemy = random.randint(0, len(enemyTypes) - 1)
+				lastEnemy = pygame.time.get_ticks()
+				gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 525, 1)
+				gameEnemies.add(gameEnemy)
+				levelDifficulty += enemyHealth[randomEnemy]
+		if(levelDifficulty >= gameDifficulty):
+			enemiesAlive = 0
+			for enemy in gameEnemies:
+				if enemy.alive == True:
+					enemiesAlive += 1
+			if(enemiesAlive == 0 and nextLevel == False):
+				nextLevel = True
+				levelResetTime = pygame.time.get_ticks()
+
+		if(nextLevel == True):
+			drawText(window.engineWindow, 'LEVEL COMPLETE', 20, (204, 0, 0), 260, 200)
+			if(pygame.time.get_ticks() - levelResetTime > 1500):
+				nextLevel = False
+				gameLevel += 1
+				lastEnemy = pygame.time.get_ticks()
+				gameDifficulty *= difficultyMultiplier
+				levelDifficulty = 0
+				gameEnemies.empty()
+		if(fort.health <= 0):
+			gameOver = True
+
+def loadGameEnemies(enemyTypes : list, anims : list):
 	enemyAnimations = []
 	enemyTypes = enemyTypes
-	enemyHealth = enemyHP
 	animationTypes = anims
 
 	for enemy in enemyTypes:
@@ -60,20 +132,41 @@ def loadGameEnemies(enemyTypes : list, enemyHP : list, anims : list):
 	            tempList.append(image)
 	        animationList.append(tempList)
 	    enemyAnimations.append(animationList)
-	return enemyAnimations
+	return enemyAnimations, enemyTypes
+
+def assignEnemyHealth(enemyHealth : list):
+	return enemyHealth
 
 def drawText(engineWindow : pygame.Surface, text : str, size : int, color : tuple, x : int, y : int):
     textImage = pygame.font.SysFont('Impact', size).render(text, True, color)
     engineWindow.blit(textImage, (x, y))
 
 def showStats(engineWindow : pygame.Surface, fort : pygame.Surface, level : int):
-    drawText(engineWindow, 'Coins: ' + str(fort.coins), 20, (0, 153, 0), 10, 10)
-    drawText(engineWindow, 'Score: ' + str(fort.kills), 20, (0, 153, 0), 180, 10)
-    drawText(engineWindow, 'Level: ' + str(level), 20, (0, 153, 0), 400, 10)
-    drawText(engineWindow, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), 18, (0, 153, 0), 585, 225)
-   # drawText(engineWindow, '500', 20, (0, 153, 0), 715, 130)
-   # drawText(engineWindow, '1000', 20, (0, 153, 0), 715, 210)
-   # drawText(engineWindow, '2000', 20, (0, 153, 0), 715, 290)
+	drawText(engineWindow, 'Coins: ' + str(fort.coins), 20, (50, 49, 63), 10, 10)
+	drawText(engineWindow, 'Score: ' + str(fort.kills), 20, (50, 49, 63), 180, 10)
+	drawText(engineWindow, 'Level: ' + str(level), 20, (50, 49, 63), 400, 10)
+	drawText(engineWindow, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), 18, (50, 49, 63), 585, 225)
+	drawText(engineWindow, '500c', 16, (34, 34, 31), 660, 42)
+	drawText(engineWindow, '1,000c', 16, (34, 34, 31), 650, 112)
+	drawText(engineWindow, '2,000c (Max: 2)', 16, (34, 34, 31), 600, 183)
+
+def resetGame():
+	drawText('GAME OVER', secondGameFont, (204, 0, 0), 260, 200)
+	drawText('PRESS "SPACE" TO RESTART', secondGameFont, (204, 0, 0), 150, 280)
+	pygame.mouse.set_visible(True)
+	key = pygame.key.get_pressed()
+	if(key[pygame.K_SPACE]):
+		gameOver = False
+		level = 1
+		gameDifficulty = 1000
+		levelDifficulty = 0
+		lastEnemy = pygame.time.get_ticks()
+		gameEnemies.empty()
+		gameTowers.empty()
+		fort.score = 0
+		fort.health = 1000
+		fort.coins = 0
+		pygame.mouse.set_visible(False)
 
 # Engine Window: #
 
@@ -122,7 +215,7 @@ class Fort():
         self.rect.x = x 
         self.rect.y = y
 
-    def fireBall(self, ballSprite : pygame.Surface):
+    def fireBall(self, ballSprite : pygame.Surface, sound : mixer.Sound):
         position = pygame.mouse.get_pos()
         xDistance = (position[0] - self.rect.midleft[0])
         yDistance = -(position[1] - self.rect.midleft[1])
@@ -131,6 +224,7 @@ class Fort():
             ball = Ball(ballSprite, self.rect.midleft[0] + 30, self.rect.midleft[1] - 25, self.angle)
             cannonBalls.add(ball)
             self.alreadyFired = True
+            sound.play()
         if (pygame.mouse.get_pressed()[0] == False):
             self.alreadyFired = False
 
@@ -206,12 +300,12 @@ class Enemy(pygame.sprite.Sprite):
         self.action = 0
         self.updateTime = pygame.time.get_ticks()
         self.image = self.animationList[self.action][self.frameIndex]
-        self.rect = pygame.Rect(0, 0, 65, 48)
+        self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
 
-    def update(self, engineWindow : pygame.Surface, fort : pygame.Surface):
+    def update(self, engineWindow : pygame.Surface, fort : pygame.Surface, sound : mixer.Sound):
         if(self.alive):
             if(pygame.sprite.spritecollide(self, cannonBalls, True)):
                 self.health -= 25
@@ -234,9 +328,10 @@ class Enemy(pygame.sprite.Sprite):
                 fort.kills += 1
                 self.updateAction(2)
                 self.alive = False
+                sound.play()
 
         self.updateAnimation()
-        engineWindow.blit(self.image, (self.rect.x, self.rect.y - 16))
+        engineWindow.blit(self.image, (self.rect.x, self.rect.y))
 
     def updateAnimation(self):
         animationTime = 100
@@ -251,8 +346,74 @@ class Enemy(pygame.sprite.Sprite):
             else:
                 self.frameIndex = 0
 
-    def updateAction(self, newAction):
+    def updateAction(self, newAction : int):
         if(newAction != self.action):
             self.action = newAction
             self.frameIndex = 0
             self.updateTime = pygame.time.get_ticks()
+
+# Buttons: #
+
+class Button():
+    def __init__(self, x : int, y : int, image : pygame.Surface):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
+
+    def drawButton(self, engineWindow : pygame.Surface):
+        action = False
+        position = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(position):
+            if(pygame.mouse.get_pressed()[0] == 1 and self.clicked == False):
+                self.clicked = True
+                action = True
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        engineWindow.blit(self.image, (self.rect.x, self.rect.y))
+        return action
+
+# Towers: #
+
+class Tower(pygame.sprite.Sprite):
+    def __init__(self, firstImage : pygame.Surface, secondImage : pygame.Surface, thirdImage : pygame.Surface, x : int, y : int):
+        pygame.sprite.Sprite.__init__(self)
+        self.ready = False
+        self.angle = 0
+        self.lastShot = pygame.time.get_ticks()
+        self.image = firstImage
+        self.firstImage = firstImage
+        self.secondImage = secondImage
+        self.thirdImage = thirdImage
+        self.rect = self.image.get_rect()
+        self.rect.x = x 
+        self.rect.y = y
+
+    def update(self, engineWindow : pygame.Surface, fort : pygame.Surface, gameEnemies : pygame.sprite.Group, ballSprite : pygame.Surface):
+        self.ready = False
+        for enemy in gameEnemies:
+            if(enemy.alive):
+            	targetX, targetY = enemy.rect.midbottom
+            	self.ready = True
+            	break
+
+        if(self.ready):
+            xDistance = (targetX - self.rect.midleft[0])
+            yDistance = -(targetY - self.rect.midleft[1])
+            self.angle = math.degrees(math.atan2(yDistance, xDistance))
+            shotCooldown = 1000
+            if(pygame.time.get_ticks() - self.lastShot > shotCooldown):
+                self.lastShot = pygame.time.get_ticks()
+                ball = Ball(ballSprite, self.rect.midleft[0], self.rect.midleft[1]+100, self.angle)
+                cannonBalls.add(ball)
+
+        if(fort.health <= 250):
+            self.image = self.thirdImage
+        elif(fort.health <= 500):
+            self.image = self.secondImage
+        else:
+            self.image = self.firstImage
+        engineWindow.blit(self.image, self.rect)

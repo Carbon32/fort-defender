@@ -18,46 +18,84 @@ window.init()
 
 # Background:
 gameBackground = loadGameImage('assets/Background.png', 800, 600)
-gameGrass = loadGameImage('assets/Grass.png', 800, 600)
 
 # Fort:
-fortCannon = loadGameImage('assets/Cannon.png', 64, 64)
-fortUndamaged = loadGameImage('assets/Fort.png', 300, 300)
-fortDamaged = loadGameImage('assets/Fort_Damaged.png', 300, 300)
-fortHeavilyDamaged = loadGameImage('assets/Fort_Heavily_Damaged.png', 300, 300)
+fortUndamaged = loadGameImage('assets/Fort/Fort.png', 300, 300)
+fortDamaged = loadGameImage('assets/Fort/Fort_Damaged.png', 300, 300)
+fortHeavilyDamaged = loadGameImage('assets/Fort/Fort_Heavily_Damaged.png', 300, 300)
 
 # Tower:
-towerUndamaged = loadGameImage('assets/Tower.png', 64, 64)
-towerDamaged = loadGameImage('assets/Tower_Damaged.png', 64, 64)
-towerHeavilyDamaged = loadGameImage('assets/Tower_Heavily_Damaged.png', 64, 64)
+towerUndamaged = loadGameImage('assets/Towers/Tower.png', 128, 128)
+towerDamaged = loadGameImage('assets/Towers/Tower_Damaged.png', 128, 128)
+towerHeavilyDamaged = loadGameImage('assets/Towers/Tower_Heavily_Damaged.png', 128, 128)
 
 # Cannon Ball:
-cannonBall = loadGameImage('assets/Ball.png', 16, 16)
+cannonBall = loadGameImage('assets/Ball/Ball.png', 16, 16)
 
 # Buttons:
-repairButton = loadGameImage('assets/Repair.png', 64, 64)
-armourButton = loadGameImage('assets/Armour.png', 64, 64)
-towerButton = loadGameImage('assets/Tower_Button.png', 64, 64)
+repairButton = loadGameImage('assets/Buttons/Repair.png', 64, 64)
+armourButton = loadGameImage('assets/Buttons/Armour.png', 64, 64)
+towerButton = loadGameImage('assets/Buttons/Tower_Button.png', 64, 64)
 
 # Crosshair: 
-crosshairSprite = loadGameImage('assets/Crosshair.png', 32, 32)
+crosshairSprite = loadGameImage('assets/Crosshair/Crosshair.png', 32, 32)
 
 # Enemy: 
-enemyAnimations = loadGameEnemies(['Tank', 'Heavy', 'Super'], [50, 100, 150], ['Move', 'Attack', 'Explosion'])
+enemyAnimations, enemyTypes = loadGameEnemies(['Tank', 'Heavy', 'Super'], ['Move', 'Attack', 'Explosion'])
+enemyHealth = assignEnemyHealth([50, 125, 250])
+
+# Sounds:
+shoot = pygame.mixer.Sound('sounds/shoot.wav')
+shoot.set_volume(0.2)
+explosion = pygame.mixer.Sound('sounds/explosion.mp3')
+explosion.set_volume(0.2)
 
 # Game Mechanics: #
 
+# Fort: 
 fort = Fort(fortUndamaged, fortDamaged, fortHeavilyDamaged, 500, 270, 1000, 1000)
+
+# Crosshair:
 crosshair = Crosshair(crosshairSprite)
+
+# Buttons:
+buttonRepair = Button(700, 10, repairButton)
+buttonArmour = Button(700, 80, armourButton)
+buttonTower = Button(700, 150, towerButton)
 
 # Game Loop: #
 
 while(window.engineRunning):
+    # Window Setup: 
     window.limitFPS(60)
     window.setBackground(gameBackground, 0, 0)
-    crosshair.drawCrosshair(window.engineWindow)
+
+    # Fort Creation:
     fort.drawFort(window.engineWindow)
-    fort.fireBall(cannonBall)
-    updateGameMechanics(window.engineWindow, fort)
+    fort.fireBall(cannonBall, shoot)
+    fort.coins = 5000
+
+    if(gameOver == False):
+        # Towers:
+        updateGameTowers(window.engineWindow, fort, cannonBall)
+
+        # Button Functionality:
+        if(buttonRepair.drawButton(window.engineWindow)):
+            fort.repairFort()
+
+        if(buttonArmour.drawButton(window.engineWindow)):
+            fort.upgradeArmour()
+
+        if(buttonTower.drawButton(window.engineWindow)):
+            if(fort.coins >= 2000 and len(gameTowers) < 2):
+                tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1])
+                gameTowers.add(tower)
+                fort.coins -= 2000
+
+        crosshair.drawCrosshair(window.engineWindow)
+        updateGameMechanics(window.engineWindow, fort, enemyAnimations, enemyTypes, enemyHealth, explosion)
+    else:
+        resetGame()
+        
     window.updateDisplay()
     
