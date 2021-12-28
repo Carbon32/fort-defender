@@ -1,8 +1,11 @@
 # **Fort Defender**: 
 
-A fort defending video game, this game is fully written in Python using Pygame library.
+A fort defending video game, fully written in Python and based on Pygame library.
 
-This game is based in World War II, the game focuses on a fort really far in the green lands. The fort is targetted by most of the war factions due to it's strategic location. The local soldiers managed to create a small auto-cannon that fires explosive cannon balls, trying to hold off the incoming enemy heavy tanks.
+This is a fort defending video game, the game focuses on a fort really far in the green lands. The fort is targetted by most of the war factions due to it's strategic location. The local soldiers managed to create a small auto-cannon that fires explosive cannon balls, trying to hold off the incoming enemy heavy tanks.
+
+**Sounds:**
+Game music/sounds from: https://www.freesfx.co.uk/ & https://mixkit.co
 
 
 **Available Tanks:**
