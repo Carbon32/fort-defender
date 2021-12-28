@@ -31,6 +31,7 @@ lastEnemy = pygame.time.get_ticks()
 enemiesAlive = 0
 gameOver = False
 randomEnemy = 0
+levelResetTime = 0
 
 # Tower Spawn Positions: #
 
@@ -76,6 +77,7 @@ def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, en
 		global randomEnemy
 		global nextLevel
 		global gameLevel
+		global levelResetTime
 		cannonBalls.update(windowWidth, windowHeight)
 		cannonBalls.draw(engineWindow)
 		gameEnemies.update(engineWindow, fort, sound)
@@ -103,7 +105,7 @@ def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, en
 				levelResetTime = pygame.time.get_ticks()
 
 		if(nextLevel == True):
-			drawText(window.engineWindow, 'LEVEL COMPLETE', 20, (204, 0, 0), 260, 200)
+			drawText(engineWindow, 'LEVEL COMPLETE', 20, (204, 0, 0), 260, 200)
 			if(pygame.time.get_ticks() - levelResetTime > 1500):
 				nextLevel = False
 				gameLevel += 1
@@ -407,7 +409,7 @@ class Tower(pygame.sprite.Sprite):
             shotCooldown = 1000
             if(pygame.time.get_ticks() - self.lastShot > shotCooldown):
                 self.lastShot = pygame.time.get_ticks()
-                ball = Ball(ballSprite, self.rect.midleft[0], self.rect.midleft[1]+100, self.angle)
+                ball = Ball(ballSprite, self.rect.midleft[0], self.rect.midleft[1]-50, self.angle)
                 cannonBalls.add(ball)
 
         if(fort.health <= 250):

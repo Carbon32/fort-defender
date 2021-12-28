@@ -73,7 +73,6 @@ while(window.engineRunning):
     # Fort Creation:
     fort.drawFort(window.engineWindow)
     fort.fireBall(cannonBall, shoot)
-    fort.coins = 5000
 
     if(gameOver == False):
         # Towers:
