@@ -19,6 +19,7 @@ mixer.init()
 
 # Global Variables: #
 
+mainMenu = True
 windowWidth = 0
 windowHeight = 0
 gameLevel = 1
@@ -32,6 +33,7 @@ enemiesAlive = 0
 gameOver = False
 randomEnemy = 0
 levelResetTime = 0
+availableBalls = 10
 
 # Tower Spawn Positions: #
 
@@ -47,6 +49,18 @@ gameEnemies = pygame.sprite.Group()
 gameTowers = pygame.sprite.Group()
 
 # Engine Functions: #
+
+def setGameIcon(path : str):
+	icon = pygame.image.load(path)
+	pygame.display.set_icon(icon)
+
+def playMusic(path : str, volume : int):
+	pygame.mixer.music.load(path)
+	pygame.mixer.music.set_volume(volume)
+	pygame.mixer.music.play(-1, 0.0, 5000)
+
+def toggleMouse(state : bool):
+	pygame.mouse.set_visible(state)
 
 def loadGameSound(path : str, volume : float):
 	sound = pygame.mixer.Sound(path)
@@ -83,11 +97,11 @@ def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, en
 		global nextLevel
 		global gameLevel
 		global levelResetTime
+		global availableBalls
 		cannonBalls.update(windowWidth, windowHeight)
 		cannonBalls.draw(engineWindow)
 		gameEnemies.update(engineWindow, fort, sound)
 		gameEnemies.draw(engineWindow)
-		showStats(engineWindow, fort, gameLevel)
 		if(levelDifficulty < gameDifficulty):
 			if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
 				if(gameLevel == 1):
@@ -117,6 +131,7 @@ def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, en
 				lastEnemy = pygame.time.get_ticks()
 				gameDifficulty *= difficultyMultiplier
 				levelDifficulty = 0
+				availableBalls = 10
 				gameEnemies.empty()
 		if(fort.health <= 0):
 			gameOver = True
@@ -148,12 +163,14 @@ def drawText(engineWindow : pygame.Surface, text : str, size : int, color : tupl
     textImage = pygame.font.SysFont('Impact', size).render(text, True, color)
     engineWindow.blit(textImage, (x, y))
 
-def showStats(engineWindow : pygame.Surface, fort : pygame.Surface, level : int):
+def showStats(engineWindow : pygame.Surface, fort : pygame.Surface):
 	drawText(engineWindow, 'Coins: ' + str(fort.coins), 20, (50, 49, 63), 10, 10)
+	drawText(engineWindow, 'Cannon Balls: ' + str(availableBalls), 20, (50, 49, 63), 10, 60)
 	drawText(engineWindow, 'Score: ' + str(fort.kills), 20, (50, 49, 63), 180, 10)
-	drawText(engineWindow, 'Level: ' + str(level), 20, (50, 49, 63), 400, 10)
+	drawText(engineWindow, 'Level: ' + str(gameLevel), 20, (50, 49, 63), 400, 10)
 	drawText(engineWindow, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), 18, (50, 49, 63), 585, 225)
 	drawText(engineWindow, '500c', 16, (34, 34, 31), 660, 42)
+	drawText(engineWindow, '250c (3b)', 16, (34, 34, 31), 482, 42)
 	drawText(engineWindow, '1,000c', 16, (34, 34, 31), 650, 112)
 	drawText(engineWindow, '2,000c (Max: 2)', 16, (34, 34, 31), 600, 183)
 
@@ -234,14 +251,16 @@ class Fort():
         self.rect.y = y
 
     def fireBall(self, ballSprite : pygame.Surface, sound : mixer.Sound):
+        global availableBalls
         position = pygame.mouse.get_pos()
         xDistance = (position[0] - self.rect.midleft[0])
         yDistance = -(position[1] - self.rect.midleft[1])
         self.angle = math.degrees(math.atan2(yDistance, xDistance))
-        if (pygame.mouse.get_pressed()[0] and self.alreadyFired == False and position[0] <= 500 and position[1] > 100):
+        if (pygame.mouse.get_pressed()[0] and self.alreadyFired == False and position[0] <= 500 and position[1] > 100 and availableBalls > 0):
             ball = Ball(ballSprite, self.rect.midleft[0] + 30, self.rect.midleft[1] - 25, self.angle)
             cannonBalls.add(ball)
             self.alreadyFired = True
+            availableBalls -= 1
             sound.play()
         if (pygame.mouse.get_pressed()[0] == False):
             self.alreadyFired = False
@@ -256,17 +275,24 @@ class Fort():
             self.image = self.firstImage
         engineWindow.blit(self.image, self.rect)
 
-    def repairFort(self):
+    def repairFort(self, sound : mixer.Sound):
         if(self.coins >= 500 and self.health < self.maxHealth):
             self.health += 250
             self.coins -= 500
             if (self.health > self.maxHealth):
                 self.health = self.maxHealth
+            sound.play()
 
-    def upgradeArmour(self):
+    def upgradeArmour(self, sound : mixer.Sound):
         if(self.coins >= 1000):
             self.maxHealth += 500
             self.coins -= 1000
+            sound.play()
+
+    def addBullets(self, sound : mixer.Sound):
+    	global availableBalls
+    	availableBalls += 3
+    	sound.play()
 
 
 # Cannon Ball: #
@@ -324,6 +350,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
     def update(self, engineWindow : pygame.Surface, fort : pygame.Surface, sound : mixer.Sound):
+        global availableBalls
         if(self.alive):
             if(pygame.sprite.spritecollide(self, cannonBalls, True)):
                 self.health -= 25
@@ -344,6 +371,7 @@ class Enemy(pygame.sprite.Sprite):
             if(self.health <= 0):
                 fort.coins += 50
                 fort.kills += 1
+                availableBalls += 2
                 self.updateAction(2)
                 self.alive = False
                 sound.play()
@@ -435,3 +463,27 @@ class Tower(pygame.sprite.Sprite):
         else:
             self.image = self.firstImage
         engineWindow.blit(self.image, self.rect)
+
+# Fade In: 
+
+class Fade():
+	def __init__(self, direction : int, color : tuple, speed : int):
+		self.direction = direction
+		self.color = color
+		self.speed = speed
+		self.fadeCounter = 0
+
+	def fade(self, engineWindow : pygame.Surface, screenWidth : int, screenHeight : int):
+		fadeCompleted = False
+		self.fadeCounter += self.speed
+		if(self.direction == 1):
+			pygame.draw.rect(engineWindow, self.color, (0 - self.fadeCounter, 0, screenWidth // 2, screenHeight))
+			pygame.draw.rect(engineWindow, self.color, (screenWidth // 2 + self.fadeCounter, 0, screenWidth, screenHeight))
+			pygame.draw.rect(engineWindow, self.color, (0, 0 - self.fadeCounter, screenWidth, screenHeight // 2))
+			pygame.draw.rect(engineWindow, self.color, (0, screenHeight // 2 + self.fadeCounter, screenWidth, screenHeight))
+		if(self.direction == 2):
+			pygame.draw.rect(engineWindow, self.color, (0, 0, screenWidth, 0 + self.fadeCounter))
+		
+		if(self.fadeCounter >= screenWidth):
+			fadeCompleted = True
+		return fadeCompleted
