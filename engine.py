@@ -48,6 +48,11 @@ gameTowers = pygame.sprite.Group()
 
 # Engine Functions: #
 
+def loadGameSound(path : str, volume : float):
+	sound = pygame.mixer.Sound(path)
+	sound.set_volume(volume)
+	return sound
+
 def changeSpawnTimer(newSpawnTimer : int):
 	global enemyTimer
 	enemyTimer = newSpawnTimer
@@ -105,7 +110,7 @@ def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, en
 				levelResetTime = pygame.time.get_ticks()
 
 		if(nextLevel == True):
-			drawText(engineWindow, 'LEVEL COMPLETE', 20, (204, 0, 0), 260, 200)
+			drawText(engineWindow, 'LEVEL COMPLETE', 50, (120, 244, 20), 240, 200)
 			if(pygame.time.get_ticks() - levelResetTime > 1500):
 				nextLevel = False
 				gameLevel += 1
@@ -152,9 +157,16 @@ def showStats(engineWindow : pygame.Surface, fort : pygame.Surface, level : int)
 	drawText(engineWindow, '1,000c', 16, (34, 34, 31), 650, 112)
 	drawText(engineWindow, '2,000c (Max: 2)', 16, (34, 34, 31), 600, 183)
 
-def resetGame():
-	drawText('GAME OVER', secondGameFont, (204, 0, 0), 260, 200)
-	drawText('PRESS "SPACE" TO RESTART', secondGameFont, (204, 0, 0), 150, 280)
+def resetGame(engineWindow : pygame.Surface, fort : pygame.Surface):
+	global gameOver
+	global level
+	global gameDifficulty
+	global levelDifficulty
+	global lastEnemy
+	global gameEnemies
+	global gameTowers
+	drawText(engineWindow, 'GAME OVER', 50, (204, 0, 0), 280, 200)
+	drawText(engineWindow, 'PRESS "SPACE" TO RESTART', 30, (204, 0, 0), 235, 250)
 	pygame.mouse.set_visible(True)
 	key = pygame.key.get_pressed()
 	if(key[pygame.K_SPACE]):
@@ -169,6 +181,7 @@ def resetGame():
 		fort.health = 1000
 		fort.coins = 0
 		pygame.mouse.set_visible(False)
+		return gameOver
 
 # Engine Window: #
 
@@ -187,6 +200,9 @@ class Window():
 		self.engineWindow = pygame.display.set_mode((self.screenWidth, self.screenHeight))
 		pygame.display.set_caption(self.windowTitle)
 		self.engineRunning = True
+
+	def quit(self):
+		pygame.quit()
 
 	def updateDisplay(self):
 		for event in pygame.event.get():

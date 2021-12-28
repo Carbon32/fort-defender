@@ -45,10 +45,8 @@ enemyAnimations, enemyTypes = loadGameEnemies(['Tank', 'Heavy', 'Super'], ['Move
 enemyHealth = assignEnemyHealth([50, 125, 250])
 
 # Sounds:
-shoot = pygame.mixer.Sound('sounds/shoot.wav')
-shoot.set_volume(0.2)
-explosion = pygame.mixer.Sound('sounds/explosion.mp3')
-explosion.set_volume(0.2)
+shoot = loadGameSound('sounds/shoot.wav', 0.2)
+explosion = loadGameSound('sounds/explosion.mp3', 0.2)
 
 # Game Mechanics: #
 
@@ -93,8 +91,13 @@ while(window.engineRunning):
 
         crosshair.drawCrosshair(window.engineWindow)
         updateGameMechanics(window.engineWindow, fort, enemyAnimations, enemyTypes, enemyHealth, explosion)
+        if(fort.health <= 0):
+            gameOver = True
     else:
-        resetGame()
+        gameOver = resetGame(window.engineWindow, fort)
+        
         
     window.updateDisplay()
+
+window.quit()
     
