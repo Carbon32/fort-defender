@@ -131,8 +131,8 @@ def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, en
 				lastEnemy = pygame.time.get_ticks()
 				gameDifficulty *= difficultyMultiplier
 				levelDifficulty = 0
-				availableBalls = 10
 				gameEnemies.empty()
+				fort.coins += 1000
 		if(fort.health <= 0):
 			gameOver = True
 
@@ -182,6 +182,7 @@ def resetGame(engineWindow : pygame.Surface, fort : pygame.Surface):
 	global lastEnemy
 	global gameEnemies
 	global gameTowers
+	global availableBalls
 	drawText(engineWindow, 'GAME OVER', 50, (204, 0, 0), 280, 200)
 	drawText(engineWindow, 'PRESS "SPACE" TO RESTART', 30, (204, 0, 0), 235, 250)
 	pygame.mouse.set_visible(True)
@@ -197,6 +198,7 @@ def resetGame(engineWindow : pygame.Surface, fort : pygame.Surface):
 		fort.score = 0
 		fort.health = 1000
 		fort.coins = 0
+		availableBalls = 10
 		pygame.mouse.set_visible(False)
 		return gameOver
 
@@ -291,7 +293,7 @@ class Fort():
 
     def addBullets(self, sound : mixer.Sound):
     	global availableBalls
-    	availableBalls += 3
+    	availableBalls += 5
     	sound.play()
 
 
@@ -371,7 +373,7 @@ class Enemy(pygame.sprite.Sprite):
             if(self.health <= 0):
                 fort.coins += 50
                 fort.kills += 1
-                availableBalls += 2
+                availableBalls += 3
                 self.updateAction(2)
                 self.alive = False
                 sound.play()
