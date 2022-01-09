@@ -15,8 +15,4 @@ https://www.freesoundslibrary.com
 
 **Available Tanks:**
 
-![Green Tank](https://github.com/Carbon32/fort-kruz/blob/main/assets/Tank/Move/0.png?raw=true)
-
-![Red Tank](https://github.com/Carbon32/fort-kruz/blob/main/assets/Heavy/Move/0.png?raw=true)
-
-![Blue Tank](https://github.com/Carbon32/fort-kruz/blob/main/assets/Super/Move/0.png?raw=true)
+<img src="https://github.com/Carbon32/fort-kruz/blob/main/assets/Tank/Move/0.png" alt="Green Tank" width="64" height="64"> <img src="https://github.com/Carbon32/fort-kruz/blob/main/assets/Heavy/Move/0.png" alt="Red Tank" width="64" height="64"> <img src="https://github.com/Carbon32/fort-kruz/blob/main/assets/Super/Move/0.png" alt="Blue Tank" width="64" height="64">
