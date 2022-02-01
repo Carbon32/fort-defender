@@ -95,6 +95,9 @@ while(window.engineRunning):
         if(buttonQuit.drawButton(window.engineWindow)):
             window.engineRunning = False
     else:
+        # Fort Particles:
+        drawFortParticles(window.engineWindow, (138, 134, 142))
+
         # Fort Creation:
         fort.drawFort(window.engineWindow)
         showStats(window.engineWindow, fort)
@@ -123,6 +126,10 @@ while(window.engineRunning):
             # Towers:
             updateGameTowers(window.engineWindow, fort, cannonBall)
             crosshair.drawCrosshair(window.engineWindow)
+            # Enemy & Damage Particles:
+            drawEnemyParticles(window.engineWindow, (255, 165, 0))
+            drawDamageParticles(window.engineWindow, (25, 51, 0))
+
             updateGameMechanics(window.engineWindow, fort, enemyAnimations, enemyTypes, enemyHealth, explosion)
             if(fort.health <= 0):
                 gameOver = True

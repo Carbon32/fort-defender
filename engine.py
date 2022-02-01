@@ -46,6 +46,7 @@ towerPositions = [
 
 fortParticles = []
 enemyParticles = []
+damageParticles = []
 
 # Sprite Groups: #
 
@@ -55,13 +56,23 @@ gameTowers = pygame.sprite.Group()
 
 # Engine Functions: #
 
+def circleSurface(radius : int, color : tuple):
+	surface = pygame.Surface((radius * 2, radius * 2))
+	pygame.draw.circle(surface, color, (radius, radius), radius)
+	surface.set_colorkey((0, 0, 0))
+	return surface
+
 def addFortParticle(x : int, y : int):
 	global fortParticles
 	fortParticles.append([[x - 150, y + 150], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
 
+def addDamageParticle(x : int, y : int):
+	global damageParticles
+	damageParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
+
 def addEnemyParticle(x : int, y : int):
 	global enemyParticles
-	enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(6, 8)])
+	enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(8, 10)])
 
 def drawFortParticles(engineWindow : pygame.Surface, color : tuple):
 	global fortParticles
@@ -70,6 +81,7 @@ def drawFortParticles(engineWindow : pygame.Surface, color : tuple):
 		particle[0][1] += particle[1][1]
 		particle[2] -= 0.1
 		pygame.draw.circle(engineWindow, color, [int(particle[0][1]), int(particle[0][0])], int(particle[2]))
+
 		if(particle[2] <= 0):
 			fortParticles.remove(particle)
 
@@ -80,8 +92,22 @@ def drawEnemyParticles(engineWindow : pygame.Surface, color : tuple):
 		particle[0][1] += particle[1][1]
 		particle[2] -= 0.1
 		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+		radius = particle[2] * 2
+		engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
 		if(particle[2] <= 0):
 			enemyParticles.remove(particle)
+
+def drawDamageParticles(engineWindow : pygame.Surface, color : tuple):
+	global damageParticles
+	for particle in damageParticles:
+		particle[0][0] += particle[1][0]
+		particle[0][1] += particle[1][1]
+		particle[2] -= 0.1
+		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+		radius = particle[2] * 2
+		engineWindow.blit(circleSurface(radius, (51, 25, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+		if(particle[2] <= 0):
+			damageParticles.remove(particle)
 
 def toggleMouseCursorOn():
 	pygame.mouse.set_visible(True)
@@ -312,7 +338,6 @@ class Fort():
             self.image = self.secondImage
         else:
             self.image = self.firstImage
-        drawFortParticles(engineWindow, (138, 134, 142))
         engineWindow.blit(self.image, self.rect)
 
     def repairFort(self, sound : mixer.Sound):
@@ -353,6 +378,11 @@ class Ball(pygame.sprite.Sprite):
     def update(self, screenWidth : int, screenHeight : int):
         if(self.rect.right < 0 or self.rect.left > screenWidth or self.rect.bottom < 0 or self.rect.top > screenHeight):
             self.kill()
+
+        if(self.rect.bottom > screenHeight - 20):
+        	addDamageParticle(self.rect.x, self.rect.y)
+        	self.kill()
+
         self.rect.x += self.deltaX
         self.rect.y += self.deltaY
 
@@ -418,7 +448,6 @@ class Enemy(pygame.sprite.Sprite):
                 sound.play()
 
         self.updateAnimation()
-        drawEnemyParticles(engineWindow, (255, 165, 0))
         engineWindow.blit(self.image, (self.rect.x, self.rect.y))
 
     def updateAnimation(self):
