@@ -21,6 +21,7 @@ window.init()
 setGameIcon("assets/Tank/Move/0.png")
 
 # Background:
+background = loadGameImage('assets/Background.png', 800, 600)
 menuBackground = loadGameImage('assets/Background_2.png', 800, 600)
 
 # Fort:
@@ -84,6 +85,7 @@ startFade = Fade(1, ((0, 0, 0)), 5)
 while(window.engineRunning):
     # Window Setup: 
     window.setGameBackground()
+    window.setBackground(background, 0, 0)
     if(mainMenu):
         toggleMouseCursorOn()
         window.setBackground(menuBackground, 0, 0)
