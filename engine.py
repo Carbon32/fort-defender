@@ -57,7 +57,7 @@ availableBalls = 10
 
 # Day & Night Cycle:
 currentTime = pygame.time.get_ticks()
-cycleTimer = 10
+cycleTimer = 1000
 cycle = 0
 day = None
 
