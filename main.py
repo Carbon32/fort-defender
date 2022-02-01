@@ -35,7 +35,7 @@ towerDamaged = loadGameImage('assets/Towers/Tower_Damaged.png', 128, 128)
 towerHeavilyDamaged = loadGameImage('assets/Towers/Tower_Heavily_Damaged.png', 128, 128)
 
 # Cannon Ball:
-cannonBall = loadGameImage('assets/Ball/Ball.png', 8, 8)
+cannonBall = loadGameImage('assets/Ball/Ball.png', 16, 16)
 
 # Buttons:
 repairButton = loadGameImage('assets/Buttons/Repair.png', 64, 64)
@@ -121,7 +121,7 @@ while(window.engineRunning):
             if(fort.coins >= 250):
                 fort.addBullets(ballLoad)
                 fort.coins -= 250
-        if(startFade.fade(window.engineWindow, 800, 600)):
+        if(startFade.fade(window.engineWindow, 800, 600) and gameOver == False):
             fort.fireBall(cannonBall, shoot)
 
         if(gameOver == False):
@@ -130,8 +130,9 @@ while(window.engineRunning):
             crosshair.drawCrosshair(window.engineWindow)
             # Enemy & Damage Particles:
             drawEnemyParticles(window.engineWindow, (255, 165, 0))
-            drawDamageParticles(window.engineWindow, (25, 51, 0))
-
+            drawGrassParticles(window.engineWindow, (25, 51, 0))
+            drawSmokeParticles(window.engineWindow, (128, 128, 128))
+            drawMoveParticles(window.engineWindow, (25, 51, 0))
             updateGameMechanics(window.engineWindow, fort, enemyAnimations, enemyTypes, enemyHealth, explosion)
             if(fort.health <= 0):
                 gameOver = True

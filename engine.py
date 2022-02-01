@@ -19,25 +19,50 @@ mixer.init()
 
 # Global Variables: #
 
-mainMenu = True
+# Window:
+
 windowWidth = 0
 windowHeight = 0
+
+# Main Menu:
+
+mainMenu = True
+
+# Level: #
+
 gameLevel = 1
 nextLevel = False
 levelDifficulty = 0
+levelResetTime = 0
+
+# Difficulty:
+
 gameDifficulty = 1000
 difficultyMultiplier = 2
+
+# Enemy:
+
 enemyTimer = 2000
 lastEnemy = pygame.time.get_ticks()
 enemiesAlive = 0
-gameOver = False
 randomEnemy = 0
-levelResetTime = 0
+
+# Game State:
+
+gameOver = False
+
+# Balls:
+
 availableBalls = 10
+
+# Day & Night Cycle:
 currentTime = pygame.time.get_ticks()
 cycleTimer = 10
 cycle = 0
 day = None
+
+# Default Background Color:
+
 red = 135
 green = 206
 blue = 255
@@ -53,7 +78,9 @@ towerPositions = [
 
 fortParticles = []
 enemyParticles = []
-damageParticles = []
+grassParticles = []
+smokeParticles = []
+moveParticles = []
 
 # Sprite Groups: #
 
@@ -81,9 +108,17 @@ def addFortParticle(x : int, y : int):
 	global fortParticles
 	fortParticles.append([[x - 150, y + 150], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
 
-def addDamageParticle(x : int, y : int):
-	global damageParticles
-	damageParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
+def addGrassParticle(x : int, y : int):
+	global grassParticles
+	grassParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
+
+def addSmokeParticle(x : int, y : int):
+	global smokeParticles
+	smokeParticles.append([[x + 10, y + 40], [random.randint(0, 5) / 3 - 1, -1], random.randint(1, 3)])
+
+def addMoveParticle(x : int, y : int):
+	global moveParticles
+	moveParticles.append([[x + 10, y + 60], [-1, -1], random.randint(1, 2)])
 
 def addEnemyParticle(x : int, y : int):
 	global enemyParticles
@@ -112,9 +147,33 @@ def drawEnemyParticles(engineWindow : pygame.Surface, color : tuple):
 		if(particle[2] <= 0):
 			enemyParticles.remove(particle)
 
-def drawDamageParticles(engineWindow : pygame.Surface, color : tuple):
-	global damageParticles
-	for particle in damageParticles:
+def drawSmokeParticles(engineWindow : pygame.Surface, color : tuple):
+	global smokeParticles
+	for particle in smokeParticles:
+		particle[0][0] += particle[1][0]
+		particle[0][1] += particle[1][1]
+		particle[2] -= 0.1
+		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+		radius = particle[2] * 2
+		engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+		if(particle[2] <= 0):
+			smokeParticles.remove(particle)
+
+def drawMoveParticles(engineWindow : pygame.Surface, color : tuple):
+	global moveParticles
+	for particle in moveParticles:
+		particle[0][0] += particle[1][0]
+		particle[0][1] += particle[1][1]
+		particle[2] -= 0.1
+		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+		radius = particle[2] * 2
+		engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+		if(particle[2] <= 0):
+			moveParticles.remove(particle)
+
+def drawGrassParticles(engineWindow : pygame.Surface, color : tuple):
+	global grassParticles
+	for particle in grassParticles:
 		particle[0][0] += particle[1][0]
 		particle[0][1] += particle[1][1]
 		particle[2] -= 0.1
@@ -122,7 +181,7 @@ def drawDamageParticles(engineWindow : pygame.Surface, color : tuple):
 		radius = particle[2] * 2
 		engineWindow.blit(circleSurface(radius, (51, 25, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
 		if(particle[2] <= 0):
-			damageParticles.remove(particle)
+			grassParticles.remove(particle)
 
 def toggleMouseCursorOn():
 	pygame.mouse.set_visible(True)
@@ -157,7 +216,7 @@ def changeGameDifficulty(newLevelDifficulty : int, newGameDifficulty : int, newD
 	newDifficultyMultiplier = newDifficultyMultiplier
 
 def loadGameImage(path : str, width : int, height : int):
-		image = pygame.image.load(path)
+		image = pygame.image.load(path).convert_alpha()
 		image = pygame.transform.scale(image, (width, height))
 		return image
 
@@ -241,15 +300,15 @@ def drawText(engineWindow : pygame.Surface, text : str, size : int, color : tupl
     engineWindow.blit(textImage, (x, y))
 
 def showStats(engineWindow : pygame.Surface, fort : pygame.Surface):
-	drawText(engineWindow, 'Coins: ' + str(fort.coins), 20, (50, 49, 63), 10, 10)
-	drawText(engineWindow, 'Cannon Balls: ' + str(availableBalls), 20, (50, 49, 63), 10, 60)
-	drawText(engineWindow, 'Score: ' + str(fort.kills), 20, (50, 49, 63), 180, 10)
-	drawText(engineWindow, 'Level: ' + str(gameLevel), 20, (50, 49, 63), 400, 10)
-	drawText(engineWindow, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), 18, (50, 49, 63), 585, 225)
-	drawText(engineWindow, '500c', 16, (34, 34, 31), 660, 42)
-	drawText(engineWindow, '250c (3b)', 16, (34, 34, 31), 482, 42)
-	drawText(engineWindow, '1,000c', 16, (34, 34, 31), 650, 112)
-	drawText(engineWindow, '2,000c (Max: 2)', 16, (34, 34, 31), 600, 183)
+	drawText(engineWindow, 'Coins: ' + str(fort.coins), 20, (255, 255, 255), 10, 10)
+	drawText(engineWindow, 'Cannon Balls: ' + str(availableBalls), 20, (255, 255, 255), 10, 60)
+	drawText(engineWindow, 'Score: ' + str(fort.kills), 20, (255, 255, 255), 180, 10)
+	drawText(engineWindow, 'Level: ' + str(gameLevel), 20, (255, 255, 255), 400, 10)
+	drawText(engineWindow, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), 18, (255, 255, 255), 585, 225)
+	drawText(engineWindow, '500c', 16, (255, 255, 255), 660, 42)
+	drawText(engineWindow, '250c (3b)', 16, (255, 255, 255), 482, 42)
+	drawText(engineWindow, '1,000c', 16, (255, 255, 255), 650, 112)
+	drawText(engineWindow, '2,000c (Max: 2)', 16, (255, 255, 255), 600, 183)
 
 def resetGame(engineWindow : pygame.Surface, fort : pygame.Surface):
 	global gameOver
@@ -431,7 +490,7 @@ class Ball(pygame.sprite.Sprite):
             self.kill()
 
         if(self.rect.bottom > screenHeight - 20):
-        	addDamageParticle(self.rect.x, self.rect.y)
+        	addGrassParticle(self.rect.x, self.rect.y)
         	self.kill()
 
         self.rect.x += self.deltaX
@@ -482,6 +541,7 @@ class Enemy(pygame.sprite.Sprite):
 
             if(self.action == 0):
                 self.rect.x += self.speed
+                addMoveParticle(self.rect.x, self.rect.y)
 
             if(self.action == 1):
                 if(pygame.time.get_ticks() - self.lastAttack > self.attackCooldown):
@@ -499,6 +559,7 @@ class Enemy(pygame.sprite.Sprite):
                 sound.play()
 
         self.updateAnimation()
+        addSmokeParticle(self.rect.x, self.rect.y)
         engineWindow.blit(self.image, (self.rect.x, self.rect.y))
 
     def updateAnimation(self):
