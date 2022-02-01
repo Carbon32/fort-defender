@@ -53,7 +53,7 @@ enemyAnimations, enemyTypes = loadGameEnemies(['Tank', 'Heavy', 'Super'], ['Move
 enemyHealth = assignEnemyHealth([50, 125, 250])
 
 # Music:
-playMusic("sounds/music.mp3", 0.2)
+# playMusic("sounds/music.mp3", 0.2)
 
 # Sounds:
 shoot = loadGameSound('sounds/shoot.wav', 0.2)
@@ -84,13 +84,13 @@ startFade = Fade(1, ((0, 0, 0)), 5)
 
 while(window.engineRunning):
     # Window Setup: 
-    window.limitFPS(60)
     window.setBackground(gameBackground, 0, 0)
     if(mainMenu):
-        toggleMouse(True)
+        toggleMouseCursorOn()
         window.setBackground(menuBackground, 0, 0)
         if(buttonStart.drawButton(window.engineWindow)):
             mainMenu = False
+            toggleMouseCursorOff()
 
         if(buttonQuit.drawButton(window.engineWindow)):
             window.engineRunning = False
@@ -130,6 +130,7 @@ while(window.engineRunning):
             gameOver = resetGame(window.engineWindow, fort)
           
     window.updateDisplay()
+    window.limitFPS(60)
 
 window.quit()
     

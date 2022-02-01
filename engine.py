@@ -42,6 +42,11 @@ towerPositions = [
 [400, 445],
 ]
 
+# Particles:
+
+fortParticles = []
+enemyParticles = []
+
 # Sprite Groups: #
 
 cannonBalls = pygame.sprite.Group()
@@ -49,6 +54,40 @@ gameEnemies = pygame.sprite.Group()
 gameTowers = pygame.sprite.Group()
 
 # Engine Functions: #
+
+def addFortParticle(x : int, y : int):
+	global fortParticles
+	fortParticles.append([[x - 150, y + 150], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
+
+def addEnemyParticle(x : int, y : int):
+	global enemyParticles
+	enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(6, 8)])
+
+def drawFortParticles(engineWindow : pygame.Surface, color : tuple):
+	global fortParticles
+	for particle in fortParticles:
+		particle[0][0] += particle[1][0]
+		particle[0][1] += particle[1][1]
+		particle[2] -= 0.1
+		pygame.draw.circle(engineWindow, color, [int(particle[0][1]), int(particle[0][0])], int(particle[2]))
+		if(particle[2] <= 0):
+			fortParticles.remove(particle)
+
+def drawEnemyParticles(engineWindow : pygame.Surface, color : tuple):
+	global enemyParticles
+	for particle in enemyParticles:
+		particle[0][0] += particle[1][0]
+		particle[0][1] += particle[1][1]
+		particle[2] -= 0.1
+		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+		if(particle[2] <= 0):
+			enemyParticles.remove(particle)
+
+def toggleMouseCursorOn():
+	pygame.mouse.set_visible(True)
+
+def toggleMouseCursorOff():
+	pygame.mouse.set_visible(False)
 
 def setGameIcon(path : str):
 	icon = pygame.image.load(path)
@@ -58,9 +97,6 @@ def playMusic(path : str, volume : int):
 	pygame.mixer.music.load(path)
 	pygame.mixer.music.set_volume(volume)
 	pygame.mixer.music.play(-1, 0.0, 5000)
-
-def toggleMouse(state : bool):
-	pygame.mouse.set_visible(state)
 
 def loadGameSound(path : str, volume : float):
 	sound = pygame.mixer.Sound(path)
@@ -264,6 +300,7 @@ class Fort():
             self.alreadyFired = True
             availableBalls -= 1
             sound.play()
+            addFortParticle(self.rect.midleft[0] + 30, self.rect.midleft[1] - 25)
         if (pygame.mouse.get_pressed()[0] == False):
             self.alreadyFired = False
 
@@ -275,6 +312,7 @@ class Fort():
             self.image = self.secondImage
         else:
             self.image = self.firstImage
+        drawFortParticles(engineWindow, (138, 134, 142))
         engineWindow.blit(self.image, self.rect)
 
     def repairFort(self, sound : mixer.Sound):
@@ -356,6 +394,7 @@ class Enemy(pygame.sprite.Sprite):
         if(self.alive):
             if(pygame.sprite.spritecollide(self, cannonBalls, True)):
                 self.health -= 25
+                addEnemyParticle(self.rect.x, self.rect.y)
 
             if(self.rect.right > fort.rect.left):
                 self.updateAction(1)
@@ -379,6 +418,7 @@ class Enemy(pygame.sprite.Sprite):
                 sound.play()
 
         self.updateAnimation()
+        drawEnemyParticles(engineWindow, (255, 165, 0))
         engineWindow.blit(self.image, (self.rect.x, self.rect.y))
 
     def updateAnimation(self):
