@@ -21,7 +21,6 @@ window.init()
 setGameIcon("assets/Tank/Move/0.png")
 
 # Background:
-gameBackground = loadGameImage('assets/Background.png', 800, 600)
 menuBackground = loadGameImage('assets/Background_2.png', 800, 600)
 
 # Fort:
@@ -35,7 +34,7 @@ towerDamaged = loadGameImage('assets/Towers/Tower_Damaged.png', 128, 128)
 towerHeavilyDamaged = loadGameImage('assets/Towers/Tower_Heavily_Damaged.png', 128, 128)
 
 # Cannon Ball:
-cannonBall = loadGameImage('assets/Ball/Ball.png', 16, 16)
+cannonBall = loadGameImage('assets/Ball/Ball.png', 8, 8)
 
 # Buttons:
 repairButton = loadGameImage('assets/Buttons/Repair.png', 64, 64)
@@ -84,7 +83,7 @@ startFade = Fade(1, ((0, 0, 0)), 5)
 
 while(window.engineRunning):
     # Window Setup: 
-    window.setBackground(gameBackground, 0, 0)
+    window.setGameBackground()
     if(mainMenu):
         toggleMouseCursorOn()
         window.setBackground(menuBackground, 0, 0)
@@ -95,6 +94,7 @@ while(window.engineRunning):
         if(buttonQuit.drawButton(window.engineWindow)):
             window.engineRunning = False
     else:
+        updateTime()
         # Fort Particles:
         drawFortParticles(window.engineWindow, (138, 134, 142))
 

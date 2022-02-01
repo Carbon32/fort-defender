@@ -34,6 +34,13 @@ gameOver = False
 randomEnemy = 0
 levelResetTime = 0
 availableBalls = 10
+currentTime = pygame.time.get_ticks()
+cycleTimer = 1000
+cycle = 0
+day = None
+red = 135
+green = 206
+blue = 255
 
 # Tower Spawn Positions: #
 
@@ -55,6 +62,14 @@ gameEnemies = pygame.sprite.Group()
 gameTowers = pygame.sprite.Group()
 
 # Engine Functions: #
+
+def updateTime():
+	global currentTime
+	global cycleTimer
+	global cycle
+	if(pygame.time.get_ticks() - currentTime >= cycleTimer):
+		cycle += 1
+		currentTime = pygame.time.get_ticks()
 
 def circleSurface(radius : int, color : tuple):
 	surface = pygame.Surface((radius * 2, radius * 2))
@@ -278,9 +293,11 @@ class Window():
 		self.fpsLimit = pygame.time.Clock()
 	
 	def init(self):
+		global day
 		self.engineWindow = pygame.display.set_mode((self.screenWidth, self.screenHeight))
 		pygame.display.set_caption(self.windowTitle)
 		self.engineRunning = True
+		day = False
 
 	def quit(self):
 		pygame.quit()
@@ -293,7 +310,41 @@ class Window():
 
 	def limitFPS(self, fps : int):
 		self.fpsLimit.tick(fps)
-	
+
+	def setGameBackground(self):
+		global cycle
+		global day
+		global red, green, blue
+		if(day == False):
+			red = 135 - cycle
+			if(red < 0):
+				red = 0
+			green = 206 - cycle
+			if(green < 0):
+				green = 0
+			blue = 255 - cycle
+			if(blue <= 0):
+				blue = 0
+				cycle = 0
+				day = True
+
+		if(day == True):
+			red = 35 + cycle
+			green = 26 + cycle
+			blue = 30 + cycle
+			if(red >= 135):
+				red = 135
+			if(green >= 206):
+				green = 206
+			if(blue >= 255):
+				blue = 255
+			if(red == 135 and green == 206 and blue == 255):
+				cycle = 0
+				day = False
+
+		color = (red, green, blue)
+		self.engineWindow.fill((color))
+
 	def setBackground(self, background : pygame.Surface, x : int, y : int):
 		self.engineWindow.blit(background, (x, y))
 
