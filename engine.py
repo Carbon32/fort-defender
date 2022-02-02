@@ -18,8 +18,7 @@ mixer.init()
 
 # Window:
 
-windowWidth = None
-windowHeight = None
+windowWidth = None ; windowHeight = None
 
 # Main Menu:
 
@@ -27,22 +26,15 @@ mainMenu = True
 
 # Level: #
 
-gameLevel = 1
-nextLevel = False
-levelDifficulty = 0
-levelResetTime = 0
+gameLevel = 1 ; nextLevel = False ; levelDifficulty = 0 ; levelResetTime = 0
 
 # Difficulty:
 
-gameDifficulty = 1000
-difficultyMultiplier = 2
+gameDifficulty = 1000 ; difficultyMultiplier = 2
 
 # Enemy:
 
-enemyTimer = 2000
-lastEnemy = pygame.time.get_ticks()
-enemiesAlive = 0
-randomEnemy = 0
+enemyTimer = 2000 ; lastEnemy = pygame.time.get_ticks() ; enemiesAlive = 0 ; randomEnemy = 0
 
 # Game State:
 
@@ -53,17 +45,11 @@ gameOver = False
 availableBalls = 10
 
 # Day & Night Cycle:
-currentTime = pygame.time.get_ticks()
-cycleTimer = 1000
-cycle = 0
-day = None
+currentTime = pygame.time.get_ticks() ; cycleTimer = 1000 ; cycle = 0 ; day = None
 
 # Default Background Color:
 
-red = 135
-green = 206
-blue = 255
-textColor = (63, 63, 62)
+red = 135 ; green = 206 ; blue = 255 ; textColor = (63, 63, 62)
 
 # Tower Spawn Positions: #
 
@@ -74,18 +60,11 @@ towerPositions = [
 
 # Particles:
 
-fortParticles = []
-enemyParticles = []
-grassParticles = []
-smokeParticles = []
-moveParticles = []
-towerParticles = []
+fortParticles = [] ; enemyParticles = [] ; grassParticles = [] ; smokeParticles = [] ; moveParticles = [] ; towerParticles = []
 
 # Sprite Groups: #
 
-cannonBalls = pygame.sprite.Group()
-gameEnemies = pygame.sprite.Group()
-gameTowers = pygame.sprite.Group()
+cannonBalls = pygame.sprite.Group() ; gameEnemies = pygame.sprite.Group() ; gameTowers = pygame.sprite.Group()
 
 # Engine Functions: #
 

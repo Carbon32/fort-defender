@@ -128,7 +128,7 @@ while(window.engineRunning):
             # Towers:
             updateGameTowers(window.engineWindow, fort, cannonBall)
             crosshair.drawCrosshair(window.engineWindow)
-            # Enemy & Damage Particles:
+            # Other Particles:
             drawGameParticles(window.engineWindow, "enemy", (255, 165, 0))
             drawGameParticles(window.engineWindow, "grass", (25, 51, 0))
             drawGameParticles(window.engineWindow, "smoke", (128, 128, 128))
