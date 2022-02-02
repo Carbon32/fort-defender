@@ -79,6 +79,7 @@ enemyParticles = []
 grassParticles = []
 smokeParticles = []
 moveParticles = []
+towerParticles = []
 
 # Sprite Groups: #
 
@@ -101,7 +102,7 @@ def circleSurface(radius : int, color : tuple):
 	return surface
 
 def addGameParticle(particleType : str, x : int, y : int):
-	global fortParticles, enemyParticles, smokeParticles, grassParticles, moveParticles
+	global fortParticles, enemyParticles, smokeParticles, grassParticles, moveParticles, towerParticles
 	particleType.lower()
 	if(particleType == "fort"):
 		fortParticles.append([[x - 150, y + 150], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
@@ -118,11 +119,14 @@ def addGameParticle(particleType : str, x : int, y : int):
 	elif(particleType == "grass"):
 		grassParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
 
+	elif(particleType == "tower"):
+		towerParticles.append([[x - 150, y + 150], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
+
 	else:
 		print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
 
 def drawGameParticles(engineWindow : pygame.Surface, particleType : str, color : tuple):
-	global fortParticles, enemyParticles, smokeParticles, grassParticles, moveParticles
+	global fortParticles, enemyParticles, smokeParticles, grassParticles, moveParticles, towerParticles
 	if(particleType == "fort"):
 		for particle in fortParticles:
 			particle[0][0] += particle[1][0]
@@ -176,6 +180,14 @@ def drawGameParticles(engineWindow : pygame.Surface, particleType : str, color :
 			if(particle[2] <= 0):
 				grassParticles.remove(particle)
 
+	elif(particleType == "tower"):
+		for particle in towerParticles:
+			particle[0][0] += particle[1][0]
+			particle[0][1] += particle[1][1]
+			particle[2] -= 0.1
+			pygame.draw.circle(engineWindow, color, [int(particle[0][1]), int(particle[0][0])], int(particle[2]))
+			if(particle[2] <= 0):
+				towerParticles.remove(particle)
 	else:
 		print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
 
@@ -617,6 +629,7 @@ class Tower(pygame.sprite.Sprite):
                 self.lastShot = pygame.time.get_ticks()
                 ball = Ball(ballSprite, self.rect.midleft[0], self.rect.midleft[1]-50, self.angle)
                 cannonBalls.add(ball)
+                addGameParticle("tower", self.rect.midleft[0] + 30, self.rect.midleft[1] - 25)
 
         if(fort.health <= 250):
             self.image = self.thirdImage

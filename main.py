@@ -53,7 +53,7 @@ enemyAnimations, enemyTypes = loadGameEnemies(['Tank', 'Heavy', 'Super'], ['Move
 enemyHealth = assignEnemyHealth([50, 125, 250])
 
 # Music:
-# playMusic("sounds/music.mp3", 0.2)
+playMusic("sounds/music.mp3", 0.2)
 
 # Sounds:
 shoot = loadGameSound('sounds/shoot.wav', 0.2)
@@ -133,6 +133,7 @@ while(window.engineRunning):
             drawGameParticles(window.engineWindow, "grass", (25, 51, 0))
             drawGameParticles(window.engineWindow, "smoke", (128, 128, 128))
             drawGameParticles(window.engineWindow, "move", (25, 51, 0))
+            drawGameParticles(window.engineWindow, "tower", (138, 134, 142))
             updateGameMechanics(window.engineWindow, fort, enemyAnimations, enemyTypes, enemyHealth, explosion)
             if(fort.health <= 0):
                 gameOver = True
