@@ -7,10 +7,7 @@
 
 # Imports: #
 
-import pygame
-from pygame import mixer
-import math
-import random
+import pygame ; from pygame import mixer ; import math ; import random
 
 # Pygame & Mixer Initializations: #
 
@@ -21,8 +18,8 @@ mixer.init()
 
 # Window:
 
-windowWidth = 0
-windowHeight = 0
+windowWidth = None
+windowHeight = None
 
 # Main Menu:
 
@@ -91,9 +88,7 @@ gameTowers = pygame.sprite.Group()
 # Engine Functions: #
 
 def updateTime():
-	global currentTime
-	global cycleTimer
-	global cycle
+	global currentTime, cycleTimer, cycle
 	if(pygame.time.get_ticks() - currentTime >= cycleTimer):
 		cycle += 1
 		currentTime = pygame.time.get_ticks()
@@ -104,84 +99,84 @@ def circleSurface(radius : int, color : tuple):
 	surface.set_colorkey((0, 0, 0))
 	return surface
 
-def addFortParticle(x : int, y : int):
-	global fortParticles
-	fortParticles.append([[x - 150, y + 150], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
+def addGameParticle(particleType : str, x : int, y : int):
+	global fortParticles, enemyParticles, smokeParticles, grassParticles, moveParticles
+	particleType.lower()
+	if(particleType == "fort"):
+		fortParticles.append([[x - 150, y + 150], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
 
-def addGrassParticle(x : int, y : int):
-	global grassParticles
-	grassParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
+	elif(particleType == "enemy"):
+		enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(8, 10)])
 
-def addSmokeParticle(x : int, y : int):
-	global smokeParticles
-	smokeParticles.append([[x + 10, y + 40], [random.randint(0, 5) / 3 - 1, -1], random.randint(1, 3)])
+	elif(particleType == "smoke"):
+		smokeParticles.append([[x + 10, y + 40], [random.randint(0, 5) / 3 - 1, -1], random.randint(1, 3)])
 
-def addMoveParticle(x : int, y : int):
-	global moveParticles
-	moveParticles.append([[x + 10, y + 60], [-1, -1], random.randint(1, 2)])
+	elif(particleType == "move"):
+		moveParticles.append([[x + 10, y + 60], [-1, -1], random.randint(1, 2)])
 
-def addEnemyParticle(x : int, y : int):
-	global enemyParticles
-	enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(8, 10)])
+	elif(particleType == "grass"):
+		grassParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
 
-def drawFortParticles(engineWindow : pygame.Surface, color : tuple):
-	global fortParticles
-	for particle in fortParticles:
-		particle[0][0] += particle[1][0]
-		particle[0][1] += particle[1][1]
-		particle[2] -= 0.1
-		pygame.draw.circle(engineWindow, color, [int(particle[0][1]), int(particle[0][0])], int(particle[2]))
+	else:
+		print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
 
-		if(particle[2] <= 0):
-			fortParticles.remove(particle)
+def drawGameParticles(engineWindow : pygame.Surface, particleType : str, color : tuple):
+	global fortParticles, enemyParticles, smokeParticles, grassParticles, moveParticles
+	if(particleType == "fort"):
+		for particle in fortParticles:
+			particle[0][0] += particle[1][0]
+			particle[0][1] += particle[1][1]
+			particle[2] -= 0.1
+			pygame.draw.circle(engineWindow, color, [int(particle[0][1]), int(particle[0][0])], int(particle[2]))
+			if(particle[2] <= 0):
+				fortParticles.remove(particle)
 
-def drawEnemyParticles(engineWindow : pygame.Surface, color : tuple):
-	global enemyParticles
-	for particle in enemyParticles:
-		particle[0][0] += particle[1][0]
-		particle[0][1] += particle[1][1]
-		particle[2] -= 0.1
-		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-		radius = particle[2] * 2
-		engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-		if(particle[2] <= 0):
-			enemyParticles.remove(particle)
+	elif(particleType == "enemy"):
+		for particle in enemyParticles:
+			particle[0][0] += particle[1][0]
+			particle[0][1] += particle[1][1]
+			particle[2] -= 0.1
+			pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+			radius = particle[2] * 2
+			engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+			if(particle[2] <= 0):
+				enemyParticles.remove(particle)
 
-def drawSmokeParticles(engineWindow : pygame.Surface, color : tuple):
-	global smokeParticles
-	for particle in smokeParticles:
-		particle[0][0] += particle[1][0]
-		particle[0][1] += particle[1][1]
-		particle[2] -= 0.1
-		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-		radius = particle[2] * 2
-		engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-		if(particle[2] <= 0):
-			smokeParticles.remove(particle)
+	elif(particleType == "smoke"):
+		for particle in smokeParticles:
+			particle[0][0] += particle[1][0]
+			particle[0][1] += particle[1][1]
+			particle[2] -= 0.1
+			pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+			radius = particle[2] * 2
+			engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+			if(particle[2] <= 0):
+				smokeParticles.remove(particle)
 
-def drawMoveParticles(engineWindow : pygame.Surface, color : tuple):
-	global moveParticles
-	for particle in moveParticles:
-		particle[0][0] += particle[1][0]
-		particle[0][1] += particle[1][1]
-		particle[2] -= 0.1
-		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-		radius = particle[2] * 2
-		engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-		if(particle[2] <= 0):
-			moveParticles.remove(particle)
+	elif(particleType == "move"):
+		for particle in moveParticles:
+			particle[0][0] += particle[1][0]
+			particle[0][1] += particle[1][1]
+			particle[2] -= 0.1
+			pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+			radius = particle[2] * 2
+			engineWindow.blit(circleSurface(radius, color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+			if(particle[2] <= 0):
+				moveParticles.remove(particle)
 
-def drawGrassParticles(engineWindow : pygame.Surface, color : tuple):
-	global grassParticles
-	for particle in grassParticles:
-		particle[0][0] += particle[1][0]
-		particle[0][1] += particle[1][1]
-		particle[2] -= 0.1
-		pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-		radius = particle[2] * 2
-		engineWindow.blit(circleSurface(radius, (51, 25, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-		if(particle[2] <= 0):
-			grassParticles.remove(particle)
+	elif(particleType == "grass"):
+		for particle in grassParticles:
+			particle[0][0] += particle[1][0]
+			particle[0][1] += particle[1][1]
+			particle[2] -= 0.1
+			pygame.draw.circle(engineWindow, color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+			radius = particle[2] * 2
+			engineWindow.blit(circleSurface(radius, (51, 25, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+			if(particle[2] <= 0):
+				grassParticles.remove(particle)
+
+	else:
+		print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
 
 def toggleMouseCursorOn():
 	pygame.mouse.set_visible(True)
@@ -436,7 +431,7 @@ class Fort():
             self.alreadyFired = True
             availableBalls -= 1
             sound.play()
-            addFortParticle(self.rect.midleft[0] + 30, self.rect.midleft[1] - 25)
+            addGameParticle("fort",  self.rect.midleft[0] + 30, self.rect.midleft[1] - 25)
         if (pygame.mouse.get_pressed()[0] == False):
             self.alreadyFired = False
 
@@ -490,7 +485,7 @@ class Ball(pygame.sprite.Sprite):
             self.kill()
 
         if(self.rect.bottom > screenHeight - 20):
-        	addGrassParticle(self.rect.x, self.rect.y)
+        	addGameParticle("grass", self.rect.x, self.rect.y)
         	self.kill()
 
         self.rect.x += self.deltaX
@@ -534,14 +529,14 @@ class Enemy(pygame.sprite.Sprite):
         if(self.alive):
             if(pygame.sprite.spritecollide(self, cannonBalls, True)):
                 self.health -= 25
-                addEnemyParticle(self.rect.x, self.rect.y)
+                addGameParticle("enemy", self.rect.x, self.rect.y)
 
             if(self.rect.right > fort.rect.left):
                 self.updateAction(1)
 
             if(self.action == 0):
                 self.rect.x += self.speed
-                addMoveParticle(self.rect.x, self.rect.y)
+                addGameParticle("move", self.rect.x, self.rect.y)
 
             if(self.action == 1):
                 if(pygame.time.get_ticks() - self.lastAttack > self.attackCooldown):
@@ -559,11 +554,11 @@ class Enemy(pygame.sprite.Sprite):
                 sound.play()
 
         self.updateAnimation()
-        addSmokeParticle(self.rect.x, self.rect.y)
+        addGameParticle("smoke", self.rect.x, self.rect.y)
         engineWindow.blit(self.image, (self.rect.x, self.rect.y))
 
     def updateAnimation(self):
-        animationTime = 100
+        animationTime = 50
         self.image = self.animationList[self.action][self.frameIndex]
         if (pygame.time.get_ticks() - self.updateTime > animationTime):
             self.updateTime = pygame.time.get_ticks()
