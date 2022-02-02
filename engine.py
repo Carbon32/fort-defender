@@ -63,6 +63,7 @@ day = None
 red = 135
 green = 206
 blue = 255
+textColor = (63, 63, 62)
 
 # Tower Spawn Positions: #
 
@@ -178,14 +179,11 @@ def drawGameParticles(engineWindow : pygame.Surface, particleType : str, color :
 	else:
 		print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
 
-def toggleMouseCursorOn():
-	pygame.mouse.set_visible(True)
-
-def toggleMouseCursorOff():
-	pygame.mouse.set_visible(False)
+def toggleMouseCursor(state : bool):
+	pygame.mouse.set_visible(state)
 
 def setGameIcon(path : str):
-	icon = pygame.image.load(path)
+	icon = pygame.image.load(path).convert_alpha()
 	pygame.display.set_icon(icon)
 
 def playMusic(path : str, volume : int):
@@ -203,9 +201,7 @@ def changeSpawnTimer(newSpawnTimer : int):
 	enemyTimer = newSpawnTimer
 
 def changeGameDifficulty(newLevelDifficulty : int, newGameDifficulty : int, newDifficultyMultiplier : int):
-	global levelDifficulty
-	global gameDifficulty
-	global difficultyMultiplier
+	global levelDifficulty, gameDifficulty, difficultyMultiplier
 	levelDifficulty = newLevelDifficulty
 	gameDifficulty = newGameDifficulty
 	newDifficultyMultiplier = newDifficultyMultiplier
@@ -221,14 +217,7 @@ def updateGameTowers(engineWindow : pygame.Surface, fort : pygame.Surface, ballS
 	gameTowers.draw(engineWindow)
 
 def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, enemyAnimations : list, enemyTypes : list, enemyHealth : list, sound : mixer.Sound):
-		global levelDifficulty
-		global gameDifficulty
-		global lastEnemy
-		global randomEnemy
-		global nextLevel
-		global gameLevel
-		global levelResetTime
-		global availableBalls
+		global levelDifficulty, gameDifficulty, lastEnemy, randomEnemy, nextLevel, gameLevel, levelResetTime, availableBalls
 		cannonBalls.update(windowWidth, windowHeight)
 		cannonBalls.draw(engineWindow)
 		gameEnemies.update(engineWindow, fort, sound)
@@ -237,10 +226,13 @@ def updateGameMechanics(engineWindow : pygame.Surface, fort : pygame.Surface, en
 			if(pygame.time.get_ticks() - lastEnemy > enemyTimer):
 				if(gameLevel == 1):
 					randomEnemy = random.randint(0, len(enemyTypes) - 3)
+
 				elif(gameLevel == 2):
 					randomEnemy = random.randint(0, len(enemyTypes) - 2)
+
 				else:
 					randomEnemy = random.randint(0, len(enemyTypes) - 1)
+
 				lastEnemy = pygame.time.get_ticks()
 				gameEnemy = Enemy(enemyHealth[randomEnemy], enemyAnimations[randomEnemy], -100, 525, 1)
 				gameEnemies.add(gameEnemy)
@@ -295,28 +287,22 @@ def drawText(engineWindow : pygame.Surface, text : str, size : int, color : tupl
     engineWindow.blit(textImage, (x, y))
 
 def showStats(engineWindow : pygame.Surface, fort : pygame.Surface):
-	drawText(engineWindow, 'Coins: ' + str(fort.coins), 20, (255, 255, 255), 10, 10)
-	drawText(engineWindow, 'Cannon Balls: ' + str(availableBalls), 20, (255, 255, 255), 10, 60)
-	drawText(engineWindow, 'Score: ' + str(fort.kills), 20, (255, 255, 255), 180, 10)
-	drawText(engineWindow, 'Level: ' + str(gameLevel), 20, (255, 255, 255), 400, 10)
-	drawText(engineWindow, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), 18, (255, 255, 255), 585, 225)
-	drawText(engineWindow, '500c', 16, (255, 255, 255), 660, 42)
-	drawText(engineWindow, '250c (3b)', 16, (255, 255, 255), 482, 42)
-	drawText(engineWindow, '1,000c', 16, (255, 255, 255), 650, 112)
-	drawText(engineWindow, '2,000c (Max: 2)', 16, (255, 255, 255), 600, 183)
+	global textColor
+	drawText(engineWindow, 'Coins: ' + str(fort.coins), 20, textColor, 10, 10)
+	drawText(engineWindow, 'Cannon Balls: ' + str(availableBalls), 20, textColor, 10, 60)
+	drawText(engineWindow, 'Score: ' + str(fort.kills), 20, textColor, 180, 10)
+	drawText(engineWindow, 'Level: ' + str(gameLevel), 20, textColor, 400, 10)
+	drawText(engineWindow, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), 18, textColor, 585, 225)
+	drawText(engineWindow, '500c', 16, textColor, 660, 42)
+	drawText(engineWindow, '250c (3b)', 16, textColor, 482, 42)
+	drawText(engineWindow, '1,000c', 16, textColor, 650, 112)
+	drawText(engineWindow, '2,000c (Max: 2)', 16, textColor, 600, 183)
 
 def resetGame(engineWindow : pygame.Surface, fort : pygame.Surface):
-	global gameOver
-	global level
-	global gameDifficulty
-	global levelDifficulty
-	global lastEnemy
-	global gameEnemies
-	global gameTowers
-	global availableBalls
+	global gameOver, level, gameDifficulty, levelDifficulty, lastEnemy, gameEnemies, gameTowers, availableBalls
 	drawText(engineWindow, 'GAME OVER', 50, (204, 0, 0), 280, 200)
 	drawText(engineWindow, 'PRESS "SPACE" TO RESTART', 30, (204, 0, 0), 235, 250)
-	pygame.mouse.set_visible(True)
+	toggleMouseCursor(True)
 	key = pygame.key.get_pressed()
 	if(key[pygame.K_SPACE]):
 		gameOver = False
@@ -330,7 +316,7 @@ def resetGame(engineWindow : pygame.Surface, fort : pygame.Surface):
 		fort.health = 1000
 		fort.coins = 0
 		availableBalls = 10
-		pygame.mouse.set_visible(False)
+		toggleMouseCursor(False)
 		return gameOver
 
 # Engine Window: #
@@ -366,9 +352,7 @@ class Window():
 		self.fpsLimit.tick(fps)
 
 	def setGameBackground(self):
-		global cycle
-		global day
-		global red, green, blue
+		global cycle, day, red, green, blue
 		if(day == False):
 			red = 135 - cycle
 			if(red < 0):
@@ -497,7 +481,7 @@ class Crosshair():
     def __init__(self, image : pygame.Surface):
         self.crosshair = image
         self.rect = self.crosshair.get_rect()
-        pygame.mouse.set_visible(False)
+        toggleMouseCursor(False)
         
     def drawCrosshair(self, engineWindow : pygame.Surface):
         position = pygame.mouse.get_pos()

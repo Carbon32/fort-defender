@@ -42,8 +42,8 @@ repairButton = loadGameImage('assets/Buttons/Repair.png', 64, 64)
 armourButton = loadGameImage('assets/Buttons/Armour.png', 64, 64)
 towerButton = loadGameImage('assets/Buttons/Tower_Button.png', 64, 64)
 bulletButton = loadGameImage('assets/Buttons/Bullets.png', 64, 64)
-startButton = loadGameImage('assets/Buttons/start.png', 168, 128)
-quitButton = loadGameImage('assets/Buttons/exit.png', 168, 128)
+startButton = loadGameImage('assets/Buttons/start.png', 439, 158)
+quitButton = loadGameImage('assets/Buttons/exit.png', 439, 158)
 
 # Crosshair: 
 crosshairSprite = loadGameImage('assets/Crosshair/Crosshair.png', 32, 32)
@@ -74,11 +74,11 @@ buttonRepair = Button(700, 10, repairButton)
 buttonArmour = Button(700, 80, armourButton)
 buttonTower = Button(700, 150, towerButton)
 buttonBullets = Button(550, 10, bulletButton)
-buttonStart = Button(320, 100, startButton)
-buttonQuit = Button(320, 250, quitButton)
+buttonStart = Button(200, 100, startButton)
+buttonQuit = Button(200, 300, quitButton)
 
 # Fade:
-startFade = Fade(1, ((0, 0, 0)), 5)
+startFade = Fade(1, ((0, 0, 0)), 12)
 
 # Game Loop: #
 
@@ -87,11 +87,11 @@ while(window.engineRunning):
     window.setGameBackground()
     window.setBackground(background, 0, 0)
     if(mainMenu):
-        toggleMouseCursorOn()
+        toggleMouseCursor(True)
         window.setBackground(menuBackground, 0, 0)
         if(buttonStart.drawButton(window.engineWindow)):
             mainMenu = False
-            toggleMouseCursorOff()
+            toggleMouseCursor(False)
 
         if(buttonQuit.drawButton(window.engineWindow)):
             window.engineRunning = False
