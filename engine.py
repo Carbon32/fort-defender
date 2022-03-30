@@ -162,7 +162,7 @@ class Fort():
 
 		self.game.display.blit(self.image, self.rect)
 
-	def repairFort(self, soundStatus, success : mixer.Sound, error : mixer.Sound):
+	def repairFort(self, soundStatus, sound : mixer.Sound, error : mixer.Sound):
 		if(self.game.coins >= 500 and self.health < self.maxHealth):
 
 			self.health += 250
