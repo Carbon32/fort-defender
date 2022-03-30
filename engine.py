@@ -354,6 +354,68 @@ class Ball(pygame.sprite.Sprite):
 		self.rect.x += self.deltaX
 		self.rect.y += self.deltaY
 
+# Towers: #
+
+class Tower(pygame.sprite.Sprite):
+	def __init__(self, x : int, y : int):
+		pygame.sprite.Sprite.__init__(self)
+
+		# Tower Settings:
+
+		self.ready = False
+		self.angle = 0
+		self.lastShot = pygame.time.get_ticks()
+
+		# Tower Sprites: 
+
+		self.firstImage = loadGameImage('assets/Towers/Tower.png', 128, 128)
+		self.secondImage = loadGameImage('assets/Towers/Tower_Damaged.png', 128, 128)
+		self.thirdImage = loadGameImage('assets/Towers/Tower_Heavily_Damaged.png', 128, 128)
+		self.image = self.firstImage
+
+		# Tower Rectangle: 
+
+		self.rect = self.image.get_rect()
+		self.rect.x = x 
+		self.rect.y = y
+
+	def update(self, game, fort):
+		self.ready = False
+
+		for enemy in game.gameEnemies:
+
+			if(enemy.alive):
+
+				targetX, targetY = enemy.rect.midbottom
+				self.ready = True
+				break
+
+		if(self.ready):
+
+			xDistance = (targetX - self.rect.midleft[0])
+			yDistance = -(targetY - self.rect.midleft[1])
+			self.angle = math.degrees(math.atan2(yDistance, xDistance))
+			shotCooldown = 1000
+
+			if(pygame.time.get_ticks() - self.lastShot > shotCooldown):
+
+				self.lastShot = pygame.time.get_ticks()
+				ball = Ball(self.rect.midleft[0], self.rect.midleft[1] - 50, self.angle)
+				game.cannonBalls.add(ball)
+
+		if(fort.health <= 250):
+
+			self.image = self.thirdImage
+
+		elif(fort.health <= 500):
+
+			self.image = self.secondImage
+
+		else:
+
+			self.image = self.firstImage
+		game.display.blit(self.image, self.rect)
+
 # Crosshair: #
 
 class Crosshair():
@@ -552,7 +614,6 @@ class Level():
 
 		self.currentLevel = 1
 
-
 # Game: #
 
 class Game():
@@ -595,6 +656,14 @@ class Game():
 
 		self.cannonBalls = pygame.sprite.Group()
 		self.gameEnemies = pygame.sprite.Group()
+		self.gameTowers = pygame.sprite.Group()
+
+		# Tower Positions: 
+
+		self.towerPositions = [
+			[600, 440],
+			[400, 445],
+		]
 
 	def clearWindow(self):
 		self.display.fill((0, 0, 0))
@@ -620,6 +689,10 @@ class Game():
 	def updateGameBalls(self, particles):
 		self.cannonBalls.update(particles, self.display.get_width(), self.display.get_height())
 		self.cannonBalls.draw(self.display)
+
+	def updateGameTowers(self, fort):
+		self.gameTowers.update(self, fort)
+		self.gameTowers.draw(self.display)
 		
 	def updateGameEnemies(self, particles, fort, soundStatus : bool, sound : mixer.Sound):
 		self.gameEnemies.update(self, particles, fort, soundStatus, sound)

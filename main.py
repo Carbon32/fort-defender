@@ -150,13 +150,13 @@ while(game.engineRunning):
 
                 fort.upgradeArmour(sounds.soundStatus, sounds.build,  sounds.error)
 
-            ''' if(ui.buttonTower.render()):
+            if(ui.buttonTower.render()):
 
-                if(fort.coins >= 2000 and len(gameTowers) < 2):
+                if(game.coins >= 2000 and len(game.gameTowers) < 2):
 
-                    tower = Tower(towerUndamaged, towerDamaged, towerHeavilyDamaged, towerPositions[len(gameTowers)][0], towerPositions[len(gameTowers)][1])
-                    gameTowers.add(tower)
-                    game.coins -= 2000'''
+                    tower = Tower(game.towerPositions[len(game.gameTowers)][0], game.towerPositions[len(game.gameTowers)][1])
+                    game.gameTowers.add(tower)
+                    game.coins -= 2000
 
             if(ui.buttonBullets.render()):
 
@@ -176,6 +176,7 @@ while(game.engineRunning):
 
             # Update Sprites: 
 
+            game.updateGameTowers(fort)
             game.updateGameBalls(particles)
             game.updateGameEnemies(particles, fort, sounds.soundStatus, sounds.explosion)
             game.updateGameMechanics(fort, enemyAnimations, enemyTypes, enemyHealth)
