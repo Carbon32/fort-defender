@@ -59,7 +59,7 @@ enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(['Tank', 'Heavy', 'Su
 
 # Music: #
 
-# sounds.playMusic()
+sounds.playMusic()
 
 # Game Loop: #
 

@@ -16,9 +16,13 @@ try:
 except ImportError:
 	raise ImportError("The Defender Engine couldn't import all of the necessary packages.")
 
-# Pygame & Mixer Initializations: #
+# Pygame Initialization: #
 
 pygame.init()
+
+# Mixer Initialization: #
+
+pygame.mixer.pre_init(44100, 16, 2, 4096)
 mixer.init()
 
 # Display: #
@@ -796,7 +800,7 @@ class Sounds():
 
 		# Music:
 
-		self.musicStatus = False
+		self.musicStatus = True
 
 		# Sounds: 
 
