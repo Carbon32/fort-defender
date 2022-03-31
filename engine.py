@@ -251,7 +251,10 @@ class Enemy(pygame.sprite.Sprite):
 			if(pygame.sprite.spritecollide(self, game.cannonBalls, True)):
 
 				self.health -= 25
-				particles.addGameParticle("enemy", self.rect.x, self.rect.y)
+
+				if(self.rect.x > 0):
+
+					particles.addGameParticle("enemy", self.rect.x, self.rect.y)
 
 			if(self.rect.right > fort.rect.left):
 
@@ -260,7 +263,10 @@ class Enemy(pygame.sprite.Sprite):
 			if(self.action == 0):
 
 				self.rect.x += self.speed
-				particles.addGameParticle("move", self.rect.x, self.rect.y)
+
+				if(self.rect.x > 0):
+
+					particles.addGameParticle("move", self.rect.x, self.rect.y)
 
 			if(self.action == 1):
 
@@ -287,7 +293,11 @@ class Enemy(pygame.sprite.Sprite):
 					sound.play()
 
 		self.updateAnimation()
-		particles.addGameParticle("smoke", self.rect.x, self.rect.y)
+
+		if(self.rect.x > 0):
+
+					particles.addGameParticle("smoke", self.rect.x, self.rect.y)
+
 		game.display.blit(self.image, (self.rect.x, self.rect.y))
 
 	def updateAnimation(self):
@@ -758,6 +768,27 @@ class Game():
 		if(fort.health <= 0):
 
 			self.gameOver = True
+
+	def resetGame(self, fort):
+		drawText(self.display, 'GAME OVER', 50, (204, 0, 0), 280, 200)
+		drawText(self.display, 'PRESS "SPACE" TO RESTART', 30, (204, 0, 0), 235, 250)
+		toggleMouseCursorOn()
+
+		if(pygame.key.get_pressed()[pygame.K_SPACE]):
+
+			self.over = False
+			self.kills = 0
+			self.level.currentLevel = 1
+			self.gameDifficulty = 1000
+			self.levelDifficulty = 0
+			self.lastEnemy = pygame.time.get_ticks()
+			self.gameEnemies.empty()
+			self.gameTowers.empty()
+			fort.score = 0
+			fort.health = 1000
+			fort.coins = 0
+			self.availableBalls = 10
+			toggleMouseCursorOff()
 
 # Fade In: 
 

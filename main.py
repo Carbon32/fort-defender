@@ -162,17 +162,13 @@ while(game.engineRunning):
 
                 fort.addBullets(sounds.soundStatus, sounds.ballLoad, sounds.error)
 
-            # Crosshair: 
-
-            crosshair.drawCrosshair()
-
             if(startFade.fade(800, 600) and game.over == False):
 
                 fort.fireBall(particles, sounds.soundStatus, sounds.shoot)
 
             if(fort.health <= 0):
 
-                game.gameOver = True
+                game.over = True
 
             # Update Sprites: 
 
@@ -181,9 +177,14 @@ while(game.engineRunning):
             game.updateGameEnemies(particles, fort, sounds.soundStatus, sounds.explosion)
             game.updateGameMechanics(fort, enemyAnimations, enemyTypes, enemyHealth)
 
+            # Crosshair: 
+
+            crosshair.drawCrosshair()
+
         else:
 
-            pass
+            game.resetGame(fort)
+
 
 
     # Update Display: 
@@ -191,4 +192,5 @@ while(game.engineRunning):
     game.updateDisplay(60)
 
 # Quit: #
+
 destroyGame()
