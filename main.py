@@ -15,7 +15,38 @@ level = Level()
 
 # Game: #
 
-game = Game(window, level)
+game = Game(level)
+
+# Resolution: #
+
+resolution = Resolution(game)
+
+# Resoltuion Selection: #
+
+while(resolution.resolutionStatus):
+    resolution.updateBackground()
+
+    if(resolution.resolutionA.render()):
+        resolution.setResolution(800, 600)
+        break
+
+    if(resolution.resolutionB.render()):
+        resolution.setResolution(1024, 768)
+        break
+
+    if(resolution.resolutionC.render()):
+        resolution.setResolution(1280, 720)
+        break
+
+    if(resolution.resolutionD.render()):
+        resolution.setResolution(1920, 1080)
+        break
+
+    resolution.updateWindow()
+
+# Start Window: 
+
+game.startWindow()
 
 # Sound: #
 
@@ -23,31 +54,31 @@ sounds = Sounds()
 
 # Menu: #
 
-menu = Menu(window)
+menu = Menu(game.display)
 
 # User Interface: #
 
-ui = UserInterface(window, game)
+ui = UserInterface(game)
 
 # Particles: #
 
-particles = Particles(window)
+particles = Particles(game.display)
 
 # Background: #
 
-background = Background(window)
+background = Background(game.display)
 
 # Crosshair: #
 
-crosshair = Crosshair(window)
+crosshair = Crosshair(game.display)
 
 # Fort: #
 
-fort = Fort(game, 500, 270, 1000)
+fort = Fort(game, game.screenWidth // 3 + game.screenWidth // 2, game.screenHeight // 5 + game.screenHeight // 2, 1000)
 
 # Fade:
 
-startFade = Fade(window, 1, ((0, 0, 0)), 12)
+startFade = Fade(game.display, 1, ((0, 0, 0)), 18)
 
 # Game Icon: #
 
@@ -55,7 +86,7 @@ game.setGameIcon("assets/Tank/Move/0.png")
 
 # Enemy Settings: #
 
-enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(['Tank', 'Heavy', 'Super'], ['Move', 'Attack', 'Explosion'], [50, 125, 250])
+enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(game.display, ['Tank', 'Heavy', 'Super'], ['Move', 'Attack', 'Explosion'], [50, 125, 250])
 
 # Music: #
 
@@ -66,7 +97,7 @@ sounds.playMusic()
 while(game.engineRunning):
 
     # Clear Window: 
-
+    print(game.fpsHandler)
     game.clearWindow()
 
      # Menu:
@@ -118,7 +149,7 @@ while(game.engineRunning):
 
         # Ground: 
 
-        background.setLevelDesign(loadGameImage('assets/Background.png', screenWidth, screenHeight), 0, 0)
+        background.setLevelDesign(loadGameImage('assets/Background.png', game.screenWidth, game.screenHeight), 0, 0)
 
         # Game Particles: 
 
@@ -154,7 +185,7 @@ while(game.engineRunning):
 
                 if(game.coins >= 2000 and len(game.gameTowers) < 2):
 
-                    tower = Tower(game.towerPositions[len(game.gameTowers)][0], game.towerPositions[len(game.gameTowers)][1])
+                    tower = Tower(game, game.towerPositions[len(game.gameTowers)][0], game.towerPositions[len(game.gameTowers)][1])
                     game.gameTowers.add(tower)
                     game.coins -= 2000
 
@@ -162,7 +193,7 @@ while(game.engineRunning):
 
                 fort.addBullets(sounds.soundStatus, sounds.ballLoad, sounds.error)
 
-            if(startFade.fade(800, 600) and game.over == False):
+            if(startFade.fade(game.screenWidth, game.screenHeight) and game.over == False):
 
                 fort.fireBall(particles, sounds.soundStatus, sounds.shoot)
 
