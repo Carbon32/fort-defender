@@ -888,7 +888,13 @@ class Particles():
 
 		elif(particleType == "enemy"):
 
-			self.enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(8, 10)])
+			if(self.display.get_height() == 720 or self.display.get_height() == 1080):
+
+				self.enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(8, 10)])
+
+			else:
+
+				self.enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(4, 6)])
 
 		elif(particleType == "smoke"):
 
@@ -896,7 +902,13 @@ class Particles():
 
 		elif(particleType == "grass"):
 
-			self.grassParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
+			if(self.display.get_height() == 720 or self.display.get_height() == 1080):
+
+				self.grassParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
+
+			else:
+
+				self.grassParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(2, 4)])
 
 		else:
 
@@ -1012,3 +1024,40 @@ class Resolution():
 				self.resolutionStatus = False
 				destroyGame()
 		pygame.display.update()
+
+
+class Clouds():
+	def __init__(self, game, imageID : int, x : int, y : int):
+
+ 		# Game: 
+
+ 		self.game = game
+
+ 		# Cloud Sprite: 
+
+ 		self.sprite = loadGameImage(f'assets/Clouds/{imageID}.png', self.game.screenWidth // 6, self.game.screenHeight // 12)
+
+ 		# Cloud Rectangle: 
+
+ 		self.rect = self.sprite.get_rect()
+ 		self.rect.x = x
+ 		self.rect.y = y
+ 		self.move = 1
+
+	def drawCloud(self):
+ 		self.game.display.blit(self.sprite, self.rect)
+
+	def updateCloud(self):
+
+ 		if(self.rect.x < self.game.screenWidth):
+
+ 			self.move = 1
+
+ 		else:
+
+ 			self.rect.x = -200
+ 		
+ 		self.rect.x += self.move
+
+
+

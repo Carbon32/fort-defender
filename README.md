@@ -38,6 +38,8 @@ This is a Python Fort Defending video game, made in pure Python. The engine is a
 
 I made sure the engine is well optimized and all features are split into different classes.
 
+Thanks to 'vnitti' for the background art. And also thanks to _Kassjak_ for the clouds art.
+
 ## Installation:
 
 To be able to run Fort Defender, you need to have Pygame installed on your computer.
