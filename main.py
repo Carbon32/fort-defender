@@ -21,28 +21,57 @@ game = Game(level)
 
 resolution = Resolution(game)
 
+# Resolution: #
+
+graphics = Graphics(game)
+
 # Resoltuion Selection: #
 
 while(resolution.resolutionStatus):
+
     resolution.updateBackground()
 
     if(resolution.resolutionA.render()):
+
         resolution.setResolution(800, 600)
         break
 
     if(resolution.resolutionB.render()):
+
         resolution.setResolution(1024, 768)
         break
 
     if(resolution.resolutionC.render()):
+
         resolution.setResolution(1280, 720)
         break
 
     if(resolution.resolutionD.render()):
+
         resolution.setResolution(1920, 1080)
         break
 
     resolution.updateWindow()
+
+# Graphics Selection: #
+
+while(graphics.graphicsStatus):
+
+    graphics.updateBackground()
+
+    if(graphics.clouds.render()):
+
+        graphics.setClouds()
+
+    if(graphics.effects.render()):
+
+        graphics.setEffects()
+
+    if(graphics.start.render()):
+
+        break
+
+    graphics.updateWindow()
 
 # Start Window: 
 
@@ -157,7 +186,7 @@ while(game.engineRunning):
 
         # Game Particles: 
 
-        particles.updateParticles()
+        particles.updateParticles(game)
 
         # Clouds:
 
@@ -205,16 +234,16 @@ while(game.engineRunning):
 
                 fort.fireBall(particles, sounds.soundStatus, sounds.shoot)
 
+                # Sprites: 
+
+                game.updateGameTowers(fort)
+                game.updateGameBalls(particles)
+                game.updateGameEnemies(particles, fort, sounds.soundStatus, sounds.explosion)
+                game.updateGameMechanics(fort, enemyAnimations, enemyTypes, enemyHealth)
+
             if(fort.health <= 0):
 
                 game.over = True
-
-            # Update Sprites: 
-
-            game.updateGameTowers(fort)
-            game.updateGameBalls(particles)
-            game.updateGameEnemies(particles, fort, sounds.soundStatus, sounds.explosion)
-            game.updateGameMechanics(fort, enemyAnimations, enemyTypes, enemyHealth)
 
             # Crosshair: 
 
@@ -223,8 +252,6 @@ while(game.engineRunning):
         else:
 
             game.resetGame(fort)
-
-
 
     # Update Display: 
 

@@ -657,6 +657,11 @@ class Game():
 		self.availableBalls = 10
 		self.over = False
 
+		# Graphics Settings: 
+
+		self.clouds = True
+		self.effects = True
+
 		# Level Settings: 
 
 		self.level = level
@@ -1029,12 +1034,15 @@ class Particles():
 
 			print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
 
-	def updateParticles(self):
-		self.drawGameParticles("fort_smoke")
-		self.drawGameParticles("hit")
-		self.drawGameParticles("ground_hit")
-		self.drawGameParticles("white_smoke")
-		self.drawGameParticles("black_smoke") 
+	def updateParticles(self, game):
+
+		if(game.effects):
+
+			self.drawGameParticles("fort_smoke")
+			self.drawGameParticles("hit")
+			self.drawGameParticles("ground_hit")
+			self.drawGameParticles("white_smoke")
+			self.drawGameParticles("black_smoke") 
 
 # Game Resolution: #
 
@@ -1081,6 +1089,82 @@ class Resolution():
 				destroyGame()
 		pygame.display.update()
 
+
+# Game Graphics: #
+
+class Graphics():
+	def __init__(self, game):
+		
+		# Game: 
+
+		self.game = game
+
+		# Display:
+
+		self.graphicsWindows = pygame.display.set_mode((300, 400))
+		pygame.display.set_caption("Fort Defender: ")
+		pygame.display.set_icon(loadGameImage('assets/icon.png', 32, 32))
+		self.graphicsStatus = True
+
+		# Background:
+
+		self.background = loadGameImage('assets/menu.png', 300, 400)
+
+		# Buttons: 
+
+		self.effects = Button(self.graphicsWindows, 0, 0, loadGameImage('assets/graphics/AOn.png', 150, 150)) 
+		self.clouds = Button(self.graphicsWindows, 150, 0, loadGameImage('assets/graphics/BOn.png', 150, 150))
+		self.start = Button(self.graphicsWindows, 75, 200, loadGameImage('assets/graphics/start.png', 150, 150)) 
+
+	def updateBackground(self):
+		self.graphicsWindows.fill((255, 255, 255))
+		self.graphicsWindows.blit(self.background, (0, 0))
+
+	def setClouds(self):
+		if(self.game.clouds):
+
+			self.game.clouds = False
+
+		else:
+
+			self.game.clouds = True
+
+	def setEffects(self):
+		if(self.game.effects):
+
+			self.game.effects = False
+
+		else:
+
+			self.game.effects = True
+
+	def updateWindow(self):
+
+		if(self.game.effects):
+
+			self.effects = Button(self.graphicsWindows, 0, 0, loadGameImage('assets/graphics/AOn.png', 150, 150)) 
+
+		else:
+
+			self.effects = Button(self.graphicsWindows, 0, 0, loadGameImage('assets/graphics/AOff.png', 150, 150)) 
+
+		if(self.game.clouds):
+
+			self.clouds = Button(self.graphicsWindows, 150, 0, loadGameImage('assets/graphics/BOn.png', 150, 150)) 
+
+		else:
+
+			self.clouds = Button(self.graphicsWindows, 150, 0, loadGameImage('assets/graphics/BOff.png', 150, 150)) 
+
+		for event in pygame.event.get():
+
+			if(event.type == pygame.QUIT):
+
+				self.resolutionStatus = False
+				destroyGame()
+		pygame.display.update()
+
+
 # Clouds: #
 
 class Clouds():
@@ -1110,18 +1194,21 @@ class Clouds():
  		]
 
 	def handleClouds(self):
- 		for cloud in self.clouds:
 
-	 		if(cloud[1] < self.game.screenWidth):
+		if(self.game.clouds):
 
-	 			self.move = 1
+	 		for cloud in self.clouds:
 
-	 		else:
+		 		if(cloud[1] < self.game.screenWidth):
 
-	 			cloud[1] = -200
-	 		
-	 		cloud[1] += self.move
-	 		self.game.display.blit(loadGameImage(f'assets/clouds/{cloud[0]}.png', self.game.screenWidth // 6, self.game.screenHeight // 12), (cloud[1], cloud[2]))
+		 			self.move = 1
+
+		 		else:
+
+		 			cloud[1] = -200
+		 		
+		 		cloud[1] += self.move
+		 		self.game.display.blit(loadGameImage(f'assets/clouds/{cloud[0]}.png', self.game.screenWidth // 6, self.game.screenHeight // 12), (cloud[1], cloud[2]))
 
 
 
