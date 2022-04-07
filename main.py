@@ -123,7 +123,7 @@ enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(game.display, ['light
 
 # Music: #
 
-# sounds.playMusic()
+sounds.playMusic()
 
 # Game Loop: #
 

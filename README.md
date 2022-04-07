@@ -20,7 +20,7 @@
 
 ## About:
 
-<img src = "https://i.imgur.com/bkwacqx.png" width = 900 height = 700>
+<img src = "https://i.imgur.com/WvM7A2Y.png" width = 900 height = 700>
 
 This is a Python Fort Defending video game, made in pure Python. The engine is able to handle a lot of tasks including: 
 
@@ -34,11 +34,14 @@ This is a Python Fort Defending video game, made in pure Python. The engine is a
 * Displaying particles & different effects (including lighting, can be seen when you shoot a tank).
 * Increasing the game level after 20 kills, making the game harder. 
 * Displaying different types of enemies (including custom animations & health).
+* Supporting multiple game resolutions.
+* Enabling or disabling certain features including particles & clouds.
 * And a few more minor features...
 
 I made sure the engine is well optimized and all features are split into different classes.
 
 Thanks to 'vnitti' for the background art. And also thanks to _Kassjak_ for the clouds art.
+Each tank sprite is based on DietDoctorSprite's "M163 PIVADS".
 
 ## Installation:
 

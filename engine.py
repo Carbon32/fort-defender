@@ -342,7 +342,7 @@ class Ball(pygame.sprite.Sprite):
 
 		# Ball Sprite: 
 
-		self.image = loadGameImage('assets/ball/ball.png', self.game.screenWidth // 80, self.game.screenWidth // 80)
+		self.image = loadGameImage('assets/ball/ball.png', self.game.screenWidth // 100, self.game.screenWidth // 100)
 
 		# Ball Rectangle: 
 
@@ -435,7 +435,7 @@ class Tower(pygame.sprite.Sprite):
 
 		else:
 
-			self.image = self.towerImages[1]
+			self.image = self.towerImages[0]
 
 		game.display.blit(self.image, self.rect)
 
@@ -1114,7 +1114,7 @@ class Graphics():
 
 		self.effects = Button(self.graphicsWindows, 0, 0, loadGameImage('assets/graphics/AOn.png', 150, 150)) 
 		self.clouds = Button(self.graphicsWindows, 150, 0, loadGameImage('assets/graphics/BOn.png', 150, 150))
-		self.start = Button(self.graphicsWindows, 75, 200, loadGameImage('assets/graphics/start.png', 150, 150)) 
+		self.start = Button(self.graphicsWindows, 75, 250, loadGameImage('assets/graphics/start.png', 150, 150)) 
 
 	def updateBackground(self):
 		self.graphicsWindows.fill((255, 255, 255))
