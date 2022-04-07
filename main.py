@@ -48,23 +48,13 @@ while(resolution.resolutionStatus):
 
 game.startWindow()
 
-# Clouds: #
-
-clouds_1 = Clouds(game, 0, 0, 0)
-clouds_2 = Clouds(game, 1, game.screenWidth // 2, game.screenHeight // 2)
-clouds_3 = Clouds(game, 2, game.screenWidth // 6, game.screenHeight // 3)
-clouds_4 = Clouds(game, 3, game.screenWidth // 3, game.screenHeight // 6)
-clouds_5 = Clouds(game, 4, 0, game.screenHeight // 2)
-clouds_6 = Clouds(game, 5, game.screenWidth, game.screenHeight // 6)
-clouds_7 = Clouds(game, 6, game.screenWidth, game.screenHeight // 3)
-clouds_8 = Clouds(game, 7, game.screenWidth // 18, game.screenHeight // 4)
-clouds_9 = Clouds(game, 8, game.screenWidth // 6, game.screenHeight // 6)
-clouds_10 = Clouds(game, 9, game.screenWidth // 16, game.screenHeight // 8)
-clouds_11 = Clouds(game, 10, game.screenWidth // 4, game.screenHeight // 10)
-
 # Sound: #
 
 sounds = Sounds()
+
+# Clouds: #
+
+clouds = Clouds(game)
 
 # Menu: #
 
@@ -92,26 +82,26 @@ fort = Fort(game, game.screenWidth // 3 + game.screenWidth // 2, game.screenHeig
 
 # Fade:
 
-startFade = Fade(game.display, 1, ((0, 0, 0)), 18)
+startFade = Fade(game.display, 1, ((0, 0, 0)), 30)
 
 # Game Icon: #
 
-game.setGameIcon("assets/Tank/Move/0.png")
+game.setGameIcon("assets/tanks/light_tank/move/0.png")
 
 # Enemy Settings: #
 
-enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(game.display, ['Tank', 'Heavy', 'Super'], ['Move', 'Attack', 'Explosion'], [50, 125, 250])
+enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(game.display, ['light_tank', 'heavy_tank', 'attack_tank'], ['move', 'attack', 'explosion'], [50, 125, 250])
 
 # Music: #
 
-#sounds.playMusic()
+# sounds.playMusic()
 
 # Game Loop: #
 
 while(game.engineRunning):
 
     # Clear Window: 
-    print(game.fpsHandler)
+
     game.clearWindow()
 
      # Menu:
@@ -163,37 +153,15 @@ while(game.engineRunning):
 
         # Ground: 
 
-        background.setLevelDesign(loadGameImage('assets/Background.png', game.screenWidth, game.screenHeight), 0, 0)
-
-        # Clouds: 
-
-        clouds_1.drawCloud()
-        clouds_2.drawCloud()
-        clouds_3.drawCloud()
-        clouds_4.drawCloud()
-        clouds_5.drawCloud()
-        clouds_6.drawCloud()
-        clouds_7.drawCloud()
-        clouds_8.drawCloud()
-        clouds_9.drawCloud()
-        clouds_10.drawCloud()
-        clouds_11.drawCloud()
-
-        clouds_1.updateCloud()
-        clouds_2.updateCloud()
-        clouds_3.updateCloud()
-        clouds_4.updateCloud()
-        clouds_5.updateCloud()
-        clouds_6.updateCloud()
-        clouds_7.updateCloud()
-        clouds_8.updateCloud()
-        clouds_9.updateCloud()
-        clouds_10.updateCloud()
-        clouds_11.updateCloud()
+        background.setLevelDesign(loadGameImage('assets/background.png', game.screenWidth, game.screenHeight), 0, 0)
 
         # Game Particles: 
 
         particles.updateParticles()
+
+        # Clouds:
+
+        clouds.handleClouds()
 
         # Fort: 
 
