@@ -100,11 +100,30 @@ class Fort():
 		self.health = health
 		self.maxHealth = self.health
 		self.alreadyFired = False
+		self.upgrades = 0
+		self.reloadTime = 2000
+		self.startReload = False
+		self.timerReload = 0
 
         # Fort Sprites: 
 
 		self.fortImages = [loadGameImage(f'assets/fort/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/fort')))]
+		self.fortUpgrades = [loadGameImage(f'assets/upgrades/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/upgrades')))]
+		self.construction = [loadGameImage(f'assets/construction/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/construction')))]
 		self.image = self.fortImages[0]
+
+		# Construction Settings:
+
+		self.constructionStart = False
+		self.constructionAnimations = 0
+		self.constructionCurrentTime = pygame.time.get_ticks()
+		self.constructionTimer = 500
+
+		# Ball Settings:
+
+		self.currentBalls = 8
+		self.ballType = 0
+		self.totalBalls = len(os.listdir('assets/ball')) - 1
 
         # Fort Rectangle: 
 
@@ -118,14 +137,17 @@ class Fort():
 		yDistance = -(position[1] - self.rect.midleft[1])
 		self.angle = math.degrees(math.atan2(yDistance, xDistance))
 
-		if(pygame.mouse.get_pressed()[0] and self.alreadyFired == False and self.game.availableBalls > 0 and position[0] < (self.game.screenWidth // 2) + (self.game.screenWidth // 3)):
+		accuracy = random.randint(-5, 5)
 
-			ball = Ball(self.game, self.rect.midleft[0] + 30, self.rect.midleft[1] - 25, self.angle)
+		if(pygame.mouse.get_pressed()[0] and self.alreadyFired == False and self.currentBalls > 0 and position[0] < (self.game.screenWidth // 2) + (self.game.screenWidth // 3)):
+
+			ball = Ball(self.game, self.rect.midleft[0] + 30, self.rect.midleft[1] - 25, self.angle + accuracy, self.ballType)
 
 			self.game.cannonBalls.add(ball)
 
 			self.alreadyFired = True
-			self.game.availableBalls -= 1
+			self.currentBalls -= 1
+
 
 			if(soundStatus):
 
@@ -143,6 +165,27 @@ class Fort():
 
 			self.alreadyFired = False
 
+		if(self.startReload == False and self.currentBalls == 0):
+
+			self.timerReload = pygame.time.get_ticks()
+			self.startReload = True
+
+		if(self.currentBalls == 0 and self.game.availableBalls >= 8):
+
+			if(pygame.time.get_ticks() - self.timerReload > self.reloadTime):
+
+				self.currentBalls = 8
+				self.game.availableBalls -= 8
+				self.startReload = False
+
+		if(self.currentBalls == 0 and self.game.availableBalls >= 1):
+
+			if(pygame.time.get_ticks() - self.timerReload > self.reloadTime):
+
+				self.currentBalls = self.game.availableBalls
+				self.game.availableBalls -= self.game.availableBalls
+				self.startReload = False
+
 
 	def drawFort(self):
 		if(self.health <= 250):
@@ -157,7 +200,30 @@ class Fort():
 
 			self.image = self.fortImages[0]
 
+
 		self.game.display.blit(self.image, self.rect)
+		self.game.display.blit(self.fortUpgrades[self.upgrades], self.rect)
+		self.game.display.blit(self.construction[self.constructionAnimations], self.rect)
+
+		pygame.draw.rect(self.game.display, (250, 0, 0), (10, 10, self.rect.w, 24))
+		pygame.draw.rect(self.game.display, (0, 250, 0), (10, 10, self.rect.w * (self.health / self.maxHealth), 24))
+		pygame.draw.rect(self.game.display, (0, 0, 0), (10, 10, self.rect.w, 24), 2)
+		drawText(self.game.display, '(' + str(self.health) + "/" + str(self.maxHealth) + ")", 1 * (self.game.screenHeight // 52), (69, 69, 69), self.game.screenWidth // 16, 10)
+
+		if(self.constructionStart):
+
+			if(pygame.time.get_ticks() - self.constructionCurrentTime >= self.constructionTimer):
+
+				self.constructionCurrentTime = pygame.time.get_ticks()
+
+				if(self.constructionAnimations < len(self.construction) - 1):
+
+					self.constructionAnimations += 1
+
+				else:
+
+					self.constructionStart = False
+					self.constructionAnimations = 0
 
 	def repairFort(self, soundStatus, sound : mixer.Sound, error : mixer.Sound):
 		if(self.game.coins >= 500 and self.health < self.maxHealth):
@@ -177,11 +243,33 @@ class Fort():
 
 			error.play()
 
+	def upgradeBalls(self, soundStatus : bool, sound : mixer.Sound, error : mixer.Sound):
+		if(self.game.coins >= 5000 and self.ballType != self.totalBalls):
+
+				self.ballType += 1
+				self.game.coins -= 5000
+
+				if(soundStatus):
+					sound.play()
+
+		else:
+
+			error.play()
+
 	def upgradeArmour(self, soundStatus : bool, sound : mixer.Sound, error : mixer.Sound):
-		if(self.game.coins >= 1000):
+		if(self.game.coins >= 1000 and not self.constructionStart):
 
 			self.maxHealth += 500
 			self.game.coins -= 1000
+			self.constructionStart = True
+
+			if(self.upgrades < 3):
+
+				self.upgrades += 1
+
+			else:
+
+				self.upgrades = 3
 
 			if(soundStatus):
 
@@ -191,7 +279,7 @@ class Fort():
 
 			error.play()
 
-	def addBullets(self, soundStatus : bool, sound : mixer.Sound, error : mixer.Sound):
+	def addBalls(self, soundStatus : bool, sound : mixer.Sound, error : mixer.Sound):
 		if(self.game.coins >= 250):
 
 				self.game.availableBalls += 5
@@ -244,13 +332,22 @@ class Enemy(pygame.sprite.Sprite):
 		self.rect.x = x
 		self.rect.y = y
 
-
 	def update(self, game, particles, fort, soundStatus : bool, sound : mixer.Sound):
 		if(self.alive):
 
 			if(pygame.sprite.spritecollide(self, game.cannonBalls, True)):
 
-				self.health -= 25
+				if(game.ballType == 0):
+
+					self.health -= 15
+
+				if(game.ballType == 1):
+
+					self.health -= 20
+
+				else:
+
+					self.health -= (20 * game.ballType)
 
 				if(self.rect.x > 0):
 
@@ -290,18 +387,24 @@ class Enemy(pygame.sprite.Sprite):
 
 		self.updateAnimation()
 
-		if(self.rect.x > 0 and self.alive):
+		if(self.rect.x > 0):
 
-			if(self.health > self.maxHealth // 2):
+			if(self.alive):
 
-				particles.addGameParticle("white_smoke", self.rect.midleft[0] + 10, self.rect.midleft[1] - (self.rect.midleft[1] // 128))
+				if(self.health > self.maxHealth // 2):
 
-			else:
+					particles.addGameParticle("white_smoke", self.rect.midleft[0] + 10, self.rect.midleft[1] - (self.rect.midleft[1] // 128))
 
-				particles.addGameParticle("black_smoke", self.rect.midleft[0] + 10, self.rect.midleft[1] - (self.rect.midleft[1] // 128))
-				particles.addGameParticle("small_hit", self.rect.midleft[0], self.rect.midleft[1] - (self.rect.midleft[1] // 64))
+				else:
 
-		game.display.blit(self.image, (self.rect.x, self.rect.y))
+					particles.addGameParticle("black_smoke", self.rect.midleft[0] + 10, self.rect.midleft[1] - (self.rect.midleft[1] // 128))
+					particles.addGameParticle("small_hit", self.rect.midleft[0], self.rect.midleft[1] - (self.rect.midleft[1] // 64))
+
+
+				pygame.draw.rect(game.display, (250, 0, 0), (self.rect.x, self.rect.y - (self.rect.h // 4), self.rect.w, 5))
+				pygame.draw.rect(game.display, (0, 250, 0), (self.rect.x, self.rect.y - (self.rect.h // 4), self.rect.w * (self.health / self.maxHealth), 5))
+
+			game.display.blit(self.image, (self.rect.x, self.rect.y))
 
 	def updateAnimation(self):
 		animationTime = 40
@@ -333,7 +436,7 @@ class Enemy(pygame.sprite.Sprite):
 # Cannon Ball: #
 
 class Ball(pygame.sprite.Sprite):
-	def __init__(self, game, x : int, y : int, angle : int):
+	def __init__(self, game, x : int, y : int, angle : int, ballType : int):
 		pygame.sprite.Sprite.__init__(self)
 
 		# Game: 
@@ -342,7 +445,7 @@ class Ball(pygame.sprite.Sprite):
 
 		# Ball Sprite: 
 
-		self.image = loadGameImage('assets/ball/ball.png', self.game.screenWidth // 100, self.game.screenWidth // 100)
+		self.image = loadGameImage(f'assets/ball/{ballType}.png', self.game.screenWidth // 100, self.game.screenWidth // 100)
 
 		# Ball Rectangle: 
 
@@ -356,7 +459,7 @@ class Ball(pygame.sprite.Sprite):
 
 		# Ball Speed: 
 
-		self.speed = 10
+		self.speed = self.game.screenWidth // 100
 
 		# Ball Direction: 
 
@@ -393,6 +496,7 @@ class Tower(pygame.sprite.Sprite):
 		# Tower Sprites: 
 
 		self.towerImages = [loadGameImage(f'assets/towers/{i}.png', self.game.display.get_width() // 12, self.game.display.get_height() // 8) for i in range(len(os.listdir('assets/towers')))]
+		self.towerUpgrades = [loadGameImage(f'assets/tower_upgrades/{i}.png', self.game.display.get_width() // 12, self.game.display.get_height() // 8) for i in range(len(os.listdir('assets/tower_upgrades')))]
 		self.image = self.towerImages[0]
 
 		# Tower Rectangle: 
@@ -401,10 +505,10 @@ class Tower(pygame.sprite.Sprite):
 		self.rect.x = x 
 		self.rect.y = y
 
-	def update(self, game, fort):
+	def update(self, fort):
 		self.ready = False
 
-		for enemy in game.gameEnemies:
+		for enemy in self.game.gameEnemies:
 
 			if(enemy.alive and enemy.rect.x > self.game.screenWidth // 2):
 
@@ -422,8 +526,8 @@ class Tower(pygame.sprite.Sprite):
 			if(pygame.time.get_ticks() - self.lastShot > shotCooldown):
 
 				self.lastShot = pygame.time.get_ticks()
-				ball = Ball(self.game, self.rect.midleft[0], self.rect.midleft[1] - 50, self.angle)
-				game.cannonBalls.add(ball)
+				ball = Ball(self.game, self.rect.midleft[0], self.rect.midleft[1] - 50, self.angle, self.game.ballType)
+				self.game.cannonBalls.add(ball)
 
 		if(fort.health <= 250):
 
@@ -437,7 +541,9 @@ class Tower(pygame.sprite.Sprite):
 
 			self.image = self.towerImages[0]
 
-		game.display.blit(self.image, self.rect)
+		self.game.display.blit(self.image, self.rect)
+		self.game.display.blit(self.towerUpgrades[fort.upgrades], self.rect)
+
 
 # Crosshair: #
 
@@ -464,15 +570,26 @@ class Crosshair():
 # Background: #
 
 class Background():
-	def __init__(self, display : pygame.Surface):
-		self.display = display
+	def __init__(self, game : pygame.Surface):
+
+		# Display:
+
+		self.game = game
+
+		# Settings:
+
 		self.currentTime = pygame.time.get_ticks()
 		self.cycleTimer = 1000
 		self.cycle = 0 
 		self.night = False
 		self.skyColor = [135, 206, 255]
 
-	def setGameBackground(self):
+		# Background Design:
+
+		self.gameBackground = pygame.Surface((self.game.screenWidth, self.game.screenHeight))
+		self.backgroundDesign = loadGameImage('assets/background.png', self.game.screenWidth, self.game.screenHeight)
+
+	def updateGameBackground(self):
 		if(self.night == False):
 
 			self.skyColor[0] = 135 - self.cycle
@@ -518,11 +635,11 @@ class Background():
 				self.cycle = 0
 				self.night = False
 
-		color = (self.skyColor[0], self.skyColor[1], self.skyColor[2])
-		self.display.fill((color))
+		self.gameBackground.fill((self.skyColor[0], self.skyColor[1], self.skyColor[2]))
+		self.gameBackground.blit(self.backgroundDesign, (0, 0))
 
-	def setLevelDesign(self, design : pygame.Surface, x : int, y : int):
-		self.display.blit(design, (x, y))
+	def drawLevelDesign(self, x : int, y : int):
+		self.game.display.blit(self.gameBackground, (x, y))
 
 	def updateTime(self):
 		if(pygame.time.get_ticks() - self.currentTime >= self.cycleTimer):
@@ -542,34 +659,41 @@ class Menu():
 		# Menu: 
 
 		self.menuStatus = True
+		self.menuBackground = pygame.Surface((self.display.get_width(), self.display.get_height()))
+		self.backgroundDesign = loadGameImage('assets/menu.png', self.display.get_width(), self.display.get_height())
+		self.menuBackground.blit(self.backgroundDesign, (0, 0))
 
 		# Buttons:
 
 		self.buttonStart = Button(self.display, self.display.get_width() // 3, self.display.get_height() // 4, loadGameImage('assets/Buttons/start.png',  self.display.get_width() // 3 , self.display.get_height() // 5))
 		self.buttonQuit = Button(self.display, self.display.get_width() // 3, self.display.get_height() // 2, loadGameImage('assets/Buttons/exit.png',  self.display.get_width() // 3, self.display.get_height() // 5))
-		self.buttonMusic = Button(self.display, self.display.get_width() // 2 + 50, self.display.get_height() // 2 + 300, loadGameImage('assets/Buttons/musicOn.png', 32, 32))
-		self.buttonSound = Button(self.display, self.display.get_width() // 2 - 50, self.display.get_height() // 2 + 300, loadGameImage('assets/Buttons/soundOn.png', 32, 32))
+		self.buttonMusic = Button(self.display, 10, 20, loadGameImage('assets/Buttons/musicOn.png', 32, 32))
+		self.buttonSound = Button(self.display, 10, 80, loadGameImage('assets/Buttons/soundOn.png', 32, 32))
+
+	def gameStarted(self):
+
+		self.buttonStart.changeButton(loadGameImage('assets/Buttons/continue.png',  self.display.get_width() // 3 , self.display.get_height() // 5))
 
 	def handleMenu(self, musicStatus : bool, soundStatus : bool):
 		if(self.menuStatus):
 
-			self.display.blit(loadGameImage('assets/menu.png', self.display.get_width(), self.display.get_height()), (0, 0))
+			self.display.blit(self.menuBackground, (0, 0))
 
 			if(musicStatus):
 
-				self.buttonMusic = Button(self.display, 10, 20, loadGameImage('assets/buttons/musicOn.png', 32, 32))
+				self.buttonMusic.changeButton(loadGameImage('assets/buttons/musicOn.png', 32, 32))
 
 			else:
 
-				self.buttonMusic = Button(self.display, 10, 20, loadGameImage('assets/buttons/musicOff.png', 32, 32))
+				self.buttonMusic.changeButton(loadGameImage('assets/buttons/musicOff.png', 32, 32))
 
 			if(soundStatus):
 
-				self.buttonSound = Button(self.display, 10, 60, loadGameImage('assets/buttons/soundOn.png', 32, 32))
+				self.buttonSound.changeButton(loadGameImage('assets/buttons/soundOn.png', 32, 32))
 
 			else:
 
-				self.buttonSound = Button(self.display, 10, 60, loadGameImage('assets/buttons/soundOff.png', 32, 32))
+				self.buttonSound.changeButton(loadGameImage('assets/buttons/soundOff.png', 32, 32))
 
 	def checkMenu(self):
 
@@ -582,24 +706,41 @@ class Menu():
 
 class UserInterface():
 	def __init__(self, game):
+
+		# Display:
+
 		self.display = game.display
+
+		# Game:
+
 		self.game = game
-		self.buttonRepair = Button(self.display, self.display.get_width() - self.display.get_width() // 16, self.display.get_height() // 2 - self.display.get_height() // 4, loadGameImage('assets/buttons/repair.png', int((self.display.get_width() // 4) * 0.19), int((self.display.get_height() // 2) * 0.17)))
-		self.buttonArmour = Button(self.display, self.display.get_width() - self.display.get_width() // 16, self.display.get_height() // 2 - self.display.get_height() // 6, loadGameImage('assets/buttons/armour.png', int((self.display.get_width() // 4) * 0.19), int((self.display.get_height() // 2) * 0.17)))
-		self.buttonTower = Button(self.display, self.display.get_width() - self.display.get_width() // 16, self.display.get_height() // 2 - self.display.get_height() // 12, loadGameImage('assets/buttons/tower.png', int((self.display.get_width() // 4) * 0.19), int((self.display.get_height() // 2) * 0.17)))
-		self.buttonBullets = Button(self.display, self.display.get_width() - self.display.get_width() // 16, self.display.get_height() - self.display.get_height() // 2, loadGameImage('assets/buttons/bullets.png', int((self.display.get_width() // 4) * 0.19), int((self.display.get_height() // 2) * 0.17)))
+
+		# Buttons:
+
+		self.buttonRepair = Button(self.display, self.game.screenWidth - self.game.screenWidth // 16, self.game.screenHeight // 2 - self.game.screenHeight // 4, loadGameImage('assets/buttons/repair.png', int((self.game.screenWidth // 4) * 0.19), int((self.game.screenHeight // 2) * 0.17)))
+		self.buttonArmour = Button(self.display, self.game.screenWidth - self.game.screenWidth // 16, self.game.screenHeight // 2 - self.game.screenHeight // 6, loadGameImage('assets/buttons/armour.png', int((self.game.screenWidth // 4) * 0.19), int((self.game.screenHeight // 2) * 0.17)))
+		self.buttonTower = Button(self.display, self.game.screenWidth - self.game.screenWidth // 16, self.game.screenHeight // 2 - self.game.screenHeight // 12, loadGameImage('assets/buttons/tower.png', int((self.game.screenWidth // 4) * 0.19), int((self.game.screenHeight // 2) * 0.17)))
+		self.buttonBalls = Button(self.display, self.game.screenWidth - self.game.screenWidth // 16, self.game.screenHeight - self.game.screenHeight// 2, loadGameImage('assets/buttons/addBalls.png', int((self.game.screenWidth // 4) * 0.19), int((self.game.screenHeight // 2) * 0.17)))
+		self.buttonBallType = Button(self.display, self.game.screenWidth - self.game.screenWidth // 16, self.game.screenHeight // 2 - self.game.screenHeight // 3, loadGameImage('assets/buttons/ballType.png', int((self.game.screenWidth // 4) * 0.19), int((self.game.screenHeight // 2) * 0.17)))
+
+		# User Interface Container: 
+
+		self.container = loadGameImage("assets/ui.png", self.game.screenWidth // 2, self.game.screenHeight - self.game.screenHeight // 3)
 
 	def showStats(self, fort, level : int):
 		textSize = 1 * (self.game.screenHeight // 54)
-		drawText(self.display, 'Coins: ' + str(self.game.coins), textSize, (69, 69, 69), self.display.get_width() // 2 + self.display.get_width() // 4, 10)
-		drawText(self.display, 'Cannon Balls: ' + str(self.game.availableBalls), textSize, (69, 69, 69), self.display.get_width() // 2 + self.display.get_width() // 3, 10)
-		drawText(self.display, 'Score: ' + str(self.game.kills), textSize, (69, 69, 69), self.display.get_width() // 2 + self.display.get_width() // 14, 10)
-		drawText(self.display, 'Level: ' + str(level), textSize, (69, 69, 69),self.display.get_width() // 2 + self.display.get_width() // 7, 10)
-		drawText(self.display, 'Health: ' + str(fort.health) + "/" + str(fort.maxHealth), textSize, (69, 69, 69), fort.rect.x + fort.rect.x // 18, self.display.get_height() - self.display.get_height() // 3)
-		drawText(self.display, '500c', textSize, (69, 69, 69), self.display.get_width() - self.display.get_width() // 11, self.display.get_height() // 2 - self.display.get_height() // 5)
-		drawText(self.display, '250c (5b)', textSize, (69, 69, 69), self.display.get_width() - self.display.get_width() // 8, 5 * (self.display.get_height() // 9))
-		drawText(self.display, '1,000c', textSize, (69, 69, 69), self.display.get_width() - self.display.get_width() // 10, self.display.get_height() // 2 - self.display.get_height() // 8)
-		drawText(self.display, '2,000c (Max: 2)', textSize - 2, (69, 69, 69), self.display.get_width() - self.display.get_width() // 7, self.display.get_height() // 2 - self.display.get_height() // 24)
+
+		self.display.blit(self.container, (self.game.screenWidth // 2, 0))
+
+		drawText(self.display, 'Coins: ' + str(self.game.coins), textSize, (69, 69, 69), self.game.screenWidth // 2 + self.game.screenWidth // 4, 10)
+		drawText(self.display, 'Cannon Balls: ' + str(fort.currentBalls) + "/" + str(self.game.availableBalls), textSize, (69, 69, 69), self.game.screenWidth // 2 + self.game.screenWidth // 3, 10)
+		drawText(self.display, 'Score: ' + str(self.game.kills), textSize, (69, 69, 69), self.game.screenWidth // 2 + self.game.screenWidth // 14, 10)
+		drawText(self.display, 'Level: ' + str(level), textSize, (69, 69, 69), self.game.screenWidth // 2 + self.game.screenWidth // 7, 10)
+		drawText(self.display, '500c', textSize, (69, 69, 69), self.game.screenWidth - self.display.get_width() // 11, self.game.screenHeight // 2 - self.game.screenHeight // 5)
+		drawText(self.display, '5,000c (' + str(self.game.ballType) + "/" + str(self.game.totalBalls) + ")", textSize, (69, 69, 69), self.game.screenWidth - self.game.screenWidth // 7, self.game.screenHeight // 2 - self.game.screenHeight // 5 - self.game.screenHeight // 11)
+		drawText(self.display, '250c (5b)', textSize, (69, 69, 69), self.game.screenWidth - self.game.screenWidth // 8, 5 * (self.game.screenHeight // 9))
+		drawText(self.display, '1,000c', textSize, (69, 69, 69), self.game.screenWidth - self.game.screenWidth // 10, self.game.screenHeight // 2 - self.game.screenHeight // 8)
+		drawText(self.display, '2,000c (Max: 2)', textSize - 2, (69, 69, 69), self.game.screenWidth - self.game.screenWidth // 7, self.game.screenHeight // 2 - self.game.screenHeight // 24)
 
 # Buttons: #
 
@@ -610,6 +751,8 @@ class Button():
 		self.rect = self.image.get_rect()
 		self.rect.topleft = (x, y)
 		self.clicked = False
+		self.buttonCooldown = 100
+		self.buttonTimer = pygame.time.get_ticks()
 
 	def render(self):
 		action = False
@@ -618,15 +761,22 @@ class Button():
 
 			if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
 
-				action = True
-				self.clicked = True
+				if(pygame.time.get_ticks() - self.buttonTimer >= self.buttonCooldown):
 
+					action = True
+					self.clicked = True
+					self.buttonTimer = pygame.time.get_ticks()
+			
 		if pygame.mouse.get_pressed()[0] == 0:
 
 			self.clicked = False
 
 		self.display.blit(self.image, (self.rect.x, self.rect.y))
 		return action
+
+	def changeButton(self, image : pygame.Surface):
+
+		self.image = image
 
 # Levels: #
 
@@ -652,10 +802,16 @@ class Game():
 
 		# Game Settings: 
 
-		self.coins = 6000
+		self.coins = 5000
 		self.kills = 0
 		self.availableBalls = 10
 		self.over = False
+		self.started = False
+
+		# Ball Settings: 
+
+		self.ballType = 0
+		self.totalBalls = len(os.listdir('assets/ball')) - 1
 
 		# Graphics Settings: 
 
@@ -723,13 +879,13 @@ class Game():
 		self.fpsHandler.tick(fps)
 		pygame.display.update()
 
-	def updateGameBalls(self, particles):
+	def updateGameBalls(self, particles, ballType : int):
 		self.cannonBalls.update(particles, self.display.get_width(), self.display.get_height())
 		self.cannonBalls.draw(self.display)
+		self.ballType = ballType
 
 	def updateGameTowers(self, fort):
-		self.gameTowers.update(self, fort)
-		self.gameTowers.draw(self.display)
+		self.gameTowers.update(fort)
 		
 	def updateGameEnemies(self, particles, fort, soundStatus : bool, sound : mixer.Sound):
 		self.gameEnemies.update(self, particles, fort, soundStatus, sound)
@@ -737,16 +893,20 @@ class Game():
 
 	def updateGameMechanics(self, fort, enemyAnimations : list, enemyTypes : list, enemyHealth : list):
 		if(self.levelDifficulty < self.gameDifficulty):
-
+			
 			if(pygame.time.get_ticks() - self.lastEnemy > self.enemyTimer):
+
+				if(len(enemyTypes) == 1):
+
+					self.randomEnemy = 0
 
 				if(self.level.currentLevel == 1):
 
-					self.randomEnemy = random.randint(0, len(enemyTypes) - 3)
+					self.randomEnemy = 0
 
 				elif(self.level.currentLevel == 2):
 
-					self.randomEnemy = random.randint(0, len(enemyTypes) - 2)
+					self.randomEnemy = random.randint(0, len(enemyTypes) - 3)
 
 				else:
 
@@ -754,7 +914,7 @@ class Game():
 
 				self.lastEnemy = pygame.time.get_ticks()
 
-				gameEnemy = Enemy(enemyHealth[self.randomEnemy], enemyAnimations[self.randomEnemy], -100, self.screenHeight - self.screenHeight // 8, 1)
+				gameEnemy = Enemy(enemyHealth[self.randomEnemy], enemyAnimations[self.randomEnemy], 0 - (self.screenWidth // 8), self.screenHeight - self.screenHeight // 8, (self.screenWidth // 100) // 8)
 				self.gameEnemies.add(gameEnemy)
 
 				self.levelDifficulty += enemyHealth[self.randomEnemy]
@@ -802,7 +962,7 @@ class Game():
 
 			self.over = False
 			self.kills = 0
-			self.coins = 1000
+			self.coins = 5000
 			self.availableBalls = 10
 			self.level.currentLevel = 1
 			self.gameDifficulty = 1000
@@ -811,6 +971,9 @@ class Game():
 			self.gameEnemies.empty()
 			self.gameTowers.empty()
 			fort.health = 1000
+			fort.upgrades = 0
+			fort.maxHealth = 1000
+			fort.currentBalls = 8
 			toggleMouseCursorOff()
 
 # Fade In: #
@@ -1142,19 +1305,19 @@ class Graphics():
 
 		if(self.game.effects):
 
-			self.effects = Button(self.graphicsWindows, 0, 0, loadGameImage('assets/graphics/AOn.png', 150, 150)) 
+			self.effects.changeButton(loadGameImage('assets/graphics/AOn.png', 150, 150))
 
 		else:
 
-			self.effects = Button(self.graphicsWindows, 0, 0, loadGameImage('assets/graphics/AOff.png', 150, 150)) 
+			self.effects.changeButton(loadGameImage('assets/graphics/AOff.png', 150, 150)) 
 
 		if(self.game.clouds):
 
-			self.clouds = Button(self.graphicsWindows, 150, 0, loadGameImage('assets/graphics/BOn.png', 150, 150)) 
+			self.clouds.changeButton(loadGameImage('assets/graphics/BOn.png', 150, 150)) 
 
 		else:
 
-			self.clouds = Button(self.graphicsWindows, 150, 0, loadGameImage('assets/graphics/BOff.png', 150, 150)) 
+			self.clouds.changeButton(loadGameImage('assets/graphics/BOff.png', 150, 150)) 
 
 		for event in pygame.event.get():
 
@@ -1193,22 +1356,22 @@ class Clouds():
 					   [10, game.screenWidth // 4, game.screenHeight // 10]
  		]
 
+ 		self.cloudSprites = [loadGameImage(f'assets/clouds/{cloud[0]}.png', self.game.screenWidth // 6, self.game.screenHeight // 12) for cloud in self.clouds]
+
 	def handleClouds(self):
 
-		if(self.game.clouds):
+		if(self.game.clouds and self.game.started):
 
-	 		for cloud in self.clouds:
+			for cloud in self.clouds:
 
-		 		if(cloud[1] < self.game.screenWidth):
+				if(cloud[1] < self.game.screenWidth):
 
-		 			self.move = 1
+					self.move = (self.game.screenWidth // 100) // 8
 
-		 		else:
+				else:
 
-		 			cloud[1] = -200
+					cloud[1] = 0 - (self.game.screenWidth // 2)
 		 		
-		 		cloud[1] += self.move
-		 		self.game.display.blit(loadGameImage(f'assets/clouds/{cloud[0]}.png', self.game.screenWidth // 6, self.game.screenHeight // 12), (cloud[1], cloud[2]))
-
-
+				cloud[1] += self.move
+				self.game.display.blit(self.cloudSprites[cloud[0]], (cloud[1], cloud[2]))
 

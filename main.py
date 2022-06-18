@@ -99,7 +99,7 @@ particles = Particles(game.display)
 
 # Background: #
 
-background = Background(game.display)
+background = Background(game)
 
 # Crosshair: #
 
@@ -119,7 +119,7 @@ game.setGameIcon("assets/tanks/light_tank/move/0.png")
 
 # Enemy Settings: #
 
-enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(game.display, ['light_tank', 'heavy_tank', 'attack_tank'], ['move', 'attack', 'explosion'], [50, 125, 250])
+enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(game.display, ['light_tank', 'heavy_tank', 'attack_tank', 'desert_tank', 'offensive_tank', 'camo_tank'], ['move', 'attack', 'explosion'], [50, 125, 250, 350, 450, 500])
 
 # Music: #
 
@@ -141,8 +141,16 @@ while(game.engineRunning):
 
         if(menu.buttonStart.render()):
 
-            menu.menuStatus = False
-            toggleMouseCursorOff()
+            if(not game.started):
+                menu.menuStatus = False
+                toggleMouseCursorOff()
+                menu.gameStarted()
+                game.started = True
+
+            else:
+
+                menu.menuStatus = False
+                toggleMouseCursorOff()
 
         if(menu.buttonQuit.render()):
 
@@ -174,7 +182,7 @@ while(game.engineRunning):
 
         # Sky:
 
-        background.setGameBackground()
+        background.updateGameBackground()
 
         # Time: 
 
@@ -182,7 +190,7 @@ while(game.engineRunning):
 
         # Ground: 
 
-        background.setLevelDesign(loadGameImage('assets/background.png', game.screenWidth, game.screenHeight), 0, 0)
+        background.drawLevelDesign(0, 0)
 
         # Game Particles: 
 
@@ -226,9 +234,13 @@ while(game.engineRunning):
                     game.gameTowers.add(tower)
                     game.coins -= 2000
 
-            if(ui.buttonBullets.render()):
+            if(ui.buttonBalls.render()):
 
-                fort.addBullets(sounds.soundStatus, sounds.ballLoad, sounds.error)
+                fort.addBalls(sounds.soundStatus, sounds.ballLoad, sounds.error)
+
+            if(ui.buttonBallType.render()):
+
+                fort.upgradeBalls(sounds.soundStatus, sounds.ballLoad, sounds.error)
 
             if(startFade.fade(game.screenWidth, game.screenHeight) and game.over == False):
 
@@ -237,7 +249,7 @@ while(game.engineRunning):
                 # Sprites: 
 
                 game.updateGameTowers(fort)
-                game.updateGameBalls(particles)
+                game.updateGameBalls(particles, fort.ballType)
                 game.updateGameEnemies(particles, fort, sounds.soundStatus, sounds.explosion)
                 game.updateGameMechanics(fort, enemyAnimations, enemyTypes, enemyHealth)
 
