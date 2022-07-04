@@ -21,7 +21,8 @@
 
 ## About:
 
-<img src = "https://i.imgur.com/z6x6LTA.png" width = 900 height = 600>
+<img src = "https://i.imgur.com/v5JnN81.png" width = 900 height = 600>
+
 
 This is a Python Fort Defending video game, made in pure Python. The engine is able to handle a lot of tasks including: 
 
