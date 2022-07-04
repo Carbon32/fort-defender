@@ -21,7 +21,7 @@
 
 ## About:
 
-<img src = "https://i.imgur.com/v5JnN81.png" width = 900 height = 600>
+<img src = "https://i.imgur.com/v5JnN81.png" width = 960 height = 540>
 
 
 This is a Python Fort Defending video game, made in pure Python. The engine is able to handle a lot of tasks including: 
@@ -66,22 +66,10 @@ To be able to run Fort Defender, you need to have Pygame installed on your compu
 
 ## Changelog:
 
-Changes made on: 06/19/2022
+Changes made on: 07/04/2022
 
-* Optimized the clouds system.
-* Fixed some performance issues.
-* Fixed the button handling.
-* Rendering is now handled properly by the engine.
-* You can choose different types of cannon balls, each one with it's own unique damage.
-* Added health bars, for the fort and the enemies.
-* You can see construction workers upgrading the armor whenever you click the upgrade button.
-* Armor upgrades are now visible on the fort.
-* Added a temporary container to improve text readbility during night time.
-* Added accuracy rate to the cannon.
-* Added two temporary enemy types.
-* The cannon supports re-loading now, you can fire eight balls before having to re-load.
-* "Start" will become "Continue" once you're in-game.
-* Game speed is properly handled in different screen resolutions.
+* Improved the user interface.
+* Better preview picture.
 
 ## License:
 
