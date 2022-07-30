@@ -13,6 +13,7 @@
       <ul>
       </ul>
     </li>
+    <li><a href="#contributors">Contributors</a></li>
     <li><a href="#changelog">Changelog</a></li>
     <li><a href="#license">License</a></li>
   </ol>
@@ -40,12 +41,7 @@ This is a Python Fort Defending video game, made in pure Python. The engine is a
 * Enabling or disabling certain features including particles & clouds.
 * And a few more minor features...
 
-I made sure the engine is well optimized and all of the features are split into different classes.
-
-Thanks to 'vnitti' for the background art. And also thanks to _Kassjak_ for the clouds art.
-Each tank sprite is based on DietDoctorSprite's "M163 PIVADS".
-
-I don't have a lot of time to work on this tiny game, the progress seems to be slower than what i've expected. The core of the engine needs to re-written.
+I made sure the engine is well optimized and all of the features are split into different classes. I don't have a lot of time to work on this tiny game, the progress seems to be slower than what i've expected. The core of the engine needs to re-written.
 
 ## Installation:
 
@@ -64,12 +60,17 @@ To be able to run Fort Defender, you need to have Pygame installed on your compu
     pip install pygame
     ```
 
+## Contributors:
+
+<a href="https://vnitti.itch.io">Vnitti (Background)</a><br>
+<a href="https://kassjak.itch.io">_Kassjak_ (Clouds)</a><br>
+<a href="https://www.deviantart.com/dietdoctorsprite">DietDoctorSprite (Tanks)</a><br>
+
 ## Changelog:
 
-Changes made on: 07/04/2022
+Changes made on: 07/30/2022
 
-* Improved the user interface.
-* Better preview picture.
+* Improved the documentation.
 
 ## License:
 
