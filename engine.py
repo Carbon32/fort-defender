@@ -84,7 +84,6 @@ def loadGameImage(path : str, width : int, height : int):
 
 def destroyGame():
 	pygame.quit()
-	quit()
 
 # Fort: #
 
