@@ -25,13 +25,13 @@
 <img src = "https://i.imgur.com/v5JnN81.png" width = 960 height = 540>
 
 
-This is a Python Fort Defending video game, made in pure Python. The engine is able to handle a lot of tasks including: 
+This is a Fort Defending video game, made in Python. The engine is able to handle a lot of tasks including: 
 
 * Displaying sprites and updating them.
 * Displaying an interactive background, supporting the day & night cycle.
 * Displaying different animations (moving, death, attack...).
 * Playing sounds and music.
-* Displaying Interactive Buttons (repair, re-load, add towers...).
+* Displaying interactive Buttons (repair, re-load, add towers...).
 * Displaying a User Interface (Health, Ammunition and other stuff).
 * Displaying & updating automatic towers (helps the player taking down enemy tanks).
 * Displaying particles & different effects (including lighting, can be seen when you shoot a tank during night time).
