@@ -5,9 +5,15 @@
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
+'''
+
+- Split Game Code []
+
+'''
+
 # Imports: #
 
-from engine import *
+from src.engine import *
 
 # Level: #
 
@@ -79,7 +85,7 @@ game.startWindow()
 
 # Sound: #
 
-sounds = Sounds()
+sounds = Sounds(game)
 
 # Clouds: #
 
@@ -87,7 +93,7 @@ clouds = Clouds(game)
 
 # Menu: #
 
-menu = Menu(game.display)
+menu = Menu(game)
 
 # User Interface: #
 
@@ -103,7 +109,7 @@ background = Background(game)
 
 # Crosshair: #
 
-crosshair = Crosshair(game.display)
+crosshair = Crosshair(game)
 
 # Fort: #
 
@@ -119,7 +125,7 @@ game.setGameIcon("assets/tanks/light_tank/move/0.png")
 
 # Enemy Settings: #
 
-enemyAnimations, enemyTypes, enemyHealth = loadGameEnemies(game.display, ['light_tank', 'heavy_tank', 'attack_tank', 'desert_tank', 'offensive_tank', 'camo_tank'], ['move', 'attack', 'explosion'], [50, 125, 250, 350, 450, 500])
+enemyAnimations, enemyTypes, enemyHealth = game.loadGameEnemies(['light_tank', 'heavy_tank', 'attack_tank', 'desert_tank', 'offensive_tank', 'camo_tank'], ['move', 'attack', 'explosion'], [50, 125, 250, 350, 450, 500])
 
 # Music: #
 
@@ -143,14 +149,14 @@ while(game.engineRunning):
 
             if(not game.started):
                 menu.menuStatus = False
-                toggleMouseCursorOff()
+                game.toggleMouseCursorOff()
                 menu.gameStarted()
                 game.started = True
 
             else:
 
                 menu.menuStatus = False
-                toggleMouseCursorOff()
+                game.toggleMouseCursorOff()
 
         if(menu.buttonQuit.render()):
 
@@ -161,7 +167,7 @@ while(game.engineRunning):
             if(sounds.musicStatus):
 
                 sounds.musicStatus = False
-                stopMusic()
+                sounds.stopMusic()
 
             else:
 
@@ -271,4 +277,4 @@ while(game.engineRunning):
 
 # Quit: #
 
-destroyGame()
+game.destroyGame()
