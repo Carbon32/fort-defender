@@ -68,9 +68,9 @@ To be able to run Fort Defender, you need to have Pygame installed on your compu
 
 ## Changelog:
 
-Changes made on: 07/30/2022
+Changes made on: 09/02/2022
 
-* Improved the documentation.
+* Started properly organizing the game code.
 
 ## License:
 
