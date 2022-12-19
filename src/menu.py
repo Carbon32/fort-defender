@@ -1,7 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -13,54 +13,42 @@ from src.button import *
 # Menu: #
 
 class Menu():
-	def __init__(self, game : pygame.Surface):
+    def __init__(self, game):
 
-		# Display:
+        # Display:
 
-		self.game = game
+        self.game = game
 
-		# Menu: 
+        # Menu: 
 
-		self.menuStatus = True
-		self.menuBackground = pygame.Surface((self.game.display.get_width(), self.game.display.get_height()))
-		self.backgroundDesign = self.game.loadGameImage('assets/menu.png', self.game.display.get_width(), self.game.display.get_height())
-		self.menuBackground.blit(self.backgroundDesign, (0, 0))
+        self.menu_status = True
+        self.menu_background = pygame.Surface((self.game.screen_width, self.game.screen_height))
+        self.background_design = self.game.load_game_image('assets/menu.png', self.game.screen_width, self.game.screen_height)
+        self.menu_background.blit(self.background_design, (0, 0))
 
-		# Buttons:
+        # Buttons:
 
-		self.buttonStart = Button(self.game.display, self.game.display.get_width() // 3, self.game.display.get_height() // 4, self.game.loadGameImage('assets/Buttons/start.png',  self.game.display.get_width() // 3 , self.game.display.get_height() // 5))
-		self.buttonQuit = Button(self.game.display, self.game.display.get_width() // 3, self.game.display.get_height() // 2, self.game.loadGameImage('assets/Buttons/exit.png',  self.game.display.get_width() // 3, self.game.display.get_height() // 5))
-		self.buttonMusic = Button(self.game.display, 10, 20, self.game.loadGameImage('assets/Buttons/musicOn.png', 32, 32))
-		self.buttonSound = Button(self.game.display, 10, 80, self.game.loadGameImage('assets/Buttons/soundOn.png', 32, 32))
+        
+        self.button_start = ButtonText(self.game, 'Start', self.game.screen_width // 3, self.game.screen_height // 4, self.game.screen_width // 3 , self.game.screen_height // 5, 22)
+        self.button_quit = ButtonText(self.game, 'Exit', self.game.screen_width // 3, self.game.screen_height // 2, self.game.screen_width // 3, self.game.screen_height // 5, 22)
+        self.button_music = ButtonImage(self.game.display, 10, 20, self.game.load_game_image('assets/Buttons/music_on.png', 32, 32))
+        self.button_sound = ButtonImage(self.game.display, 10, 80, self.game.load_game_image('assets/Buttons/sound_on.png', 32, 32))
 
-	def gameStarted(self):
+    def handle_menu(self, sounds):
+        if(self.menu_status):
+            self.game.display.blit(self.menu_background, (0, 0))
+            if(sounds.music_status):
+                self.button_music.change_button(self.game.load_game_image('assets/buttons/music_on.png', 32, 32))
+            else:
+                self.button_music.change_button(self.game.load_game_image('assets/buttons/music_off.png', 32, 32))
 
-		self.buttonStart.changeButton(self.game.loadGameImage('assets/Buttons/continue.png',  self.game.display.get_width() // 3 , self.game.display.get_height() // 5))
+            if(sounds.sound_status):
+                self.button_sound.change_button(self.game.load_game_image('assets/buttons/sound_on.png', 32, 32))
+            else:
+                self.button_sound.change_button(self.game.load_game_image('assets/buttons/sound_off.png', 32, 32))
 
-	def handleMenu(self, musicStatus : bool, soundStatus : bool):
-		if(self.menuStatus):
-
-			self.game.display.blit(self.menuBackground, (0, 0))
-
-			if(musicStatus):
-
-				self.buttonMusic.changeButton(self.game.loadGameImage('assets/buttons/musicOn.png', 32, 32))
-
-			else:
-
-				self.buttonMusic.changeButton(self.game.loadGameImage('assets/buttons/musicOff.png', 32, 32))
-
-			if(soundStatus):
-
-				self.buttonSound.changeButton(self.game.loadGameImage('assets/buttons/soundOn.png', 32, 32))
-
-			else:
-
-				self.buttonSound.changeButton(self.game.loadGameImage('assets/buttons/soundOff.png', 32, 32))
-
-	def checkMenu(self):
-
-		if(pygame.key.get_pressed()[pygame.K_ESCAPE] and self.menuStatus == False):
-
-			self.menuStatus = True
-			self.game.toggleMouseCursorOn()
+    def check_menu(self):
+        if(pygame.key.get_pressed()[pygame.K_ESCAPE] and self.menu_status == False):
+            self.button_start.change_text('Continue')
+            self.menu_status = True
+            self.game.toggle_mouse_cursor_on()

@@ -1,7 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -12,170 +12,79 @@ from src.modules import *
 # Game Particles: #
 
 class Particles():
-	def __init__(self, display : pygame.Surface):
+    def __init__(self, display):
 
-		# Display
+        # Display
 
-		self.display = display
+        self.display = display
 
-		# Particles: 
+        # Particles: 
 
-		self.fortParticles = []
-		self.enemyParticles = []
-		self.groundParticles = []
-		self.whiteSmokeParticles = []
-		self.blackSmokeParticles = []
-		self.towerParticles = []
-
-	def circleSurface(self, radius : int, color : tuple):
-		surface = pygame.Surface((radius * 2, radius * 2))
-		pygame.draw.circle(surface, color, (radius, radius), radius)
-		surface.set_colorkey((0, 0, 0))
-		return surface
-
-	def addGameParticle(self, particleType : str, x : int, y : int):
-		particleType.lower()
-		if(particleType == "fort_smoke"):
-
-			self.fortParticles.append([[x, y], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
-
-		elif(particleType == "hit"):
-
-			if(self.display.get_height() == 720 or self.display.get_height() == 1080):
-
-				self.enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(8, 10)])
-
-			else:
-
-				self.enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(4, 6)])
-
-		elif(particleType == "small_hit"):
-
-			if(self.display.get_height() == 720 or self.display.get_height() == 1080):
-
-				self.enemyParticles.append([[x + 30, y + 30], [random.randint(0, 10) / 10 - 1, -2], random.randint(2, 3)])
-
-			else:
-
-				self.enemyParticles.append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(1, 2)])
-
-		elif(particleType == "white_smoke"):
-
-			self.whiteSmokeParticles.append([[x, y], [random.randint(0, 5) / 3 - 1, -1], random.randint(1, 3)])
-
-		elif(particleType == "black_smoke"):
-
-			self.blackSmokeParticles.append([[x, y], [random.randint(0, 5) / 3 - 1, -1], random.randint(3, 6)])
-
-		elif(particleType == "ground_hit"):
-
-			if(self.display.get_height() == 720 or self.display.get_height() == 1080):
-
-				self.groundParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
-
-			else:
-
-				self.groundParticles.append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(2, 4)])
-
-		else:
-
-			print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
-
-	def drawGameParticles(self, particleType : str):
-		if(particleType == "fort_smoke"):
-
-			for particle in self.fortParticles:
-
-				particle[0][0] += particle[1][0]
-				particle[0][1] += particle[1][1]
-				particle[2] -= 0.1
-				pygame.draw.circle(self.display, (138, 134, 142), [int(particle[0][1]), int(particle[0][0])], int(particle[2]))
-				
-				if(particle[2] <= 0):
-
-					self.fortParticles.remove(particle)
-
-		elif(particleType == "hit"):
-
-			for particle in self.enemyParticles:
-
-				particle[0][0] += particle[1][0]
-				particle[0][1] += particle[1][1]
-				particle[2] -= 0.1
-				pygame.draw.circle(self.display, (255, 165, 0), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-				radius = particle[2] * 2
-				self.display.blit(self.circleSurface(radius, (255, 165, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-				
-				if(particle[2] <= 0):
-					self.enemyParticles.remove(particle)
-
-		elif(particleType == "small_hit"):
-
-			for particle in self.enemyParticles:
-
-				particle[0][0] += particle[1][0]
-				particle[0][1] += particle[1][1]
-				particle[2] -= 0.1
-				pygame.draw.circle(self.display, (255, 165, 0), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-				radius = particle[2] * 2
-				self.display.blit(self.circleSurface(radius, (255, 165, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-				
-				if(particle[2] <= 0):
-					self.enemyParticles.remove(particle)
-
-		elif(particleType == "white_smoke"):
-
-			for particle in self.whiteSmokeParticles:
-
-				particle[0][0] += particle[1][0]
-				particle[0][1] += particle[1][1]
-				particle[2] -= 0.1
-				pygame.draw.circle(self.display, (128, 128, 128), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-				radius = particle[2] * 2
-				self.display.blit(self.circleSurface(radius, (128, 128, 128)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-				
-				if(particle[2] <= 0):
-					self.whiteSmokeParticles.remove(particle)
-
-		elif(particleType == "black_smoke"):
-
-			for particle in self.blackSmokeParticles:
-
-				particle[0][0] += particle[1][0]
-				particle[0][1] += particle[1][1]
-				particle[2] -= 0.1
-				pygame.draw.circle(self.display, (0, 0, 0), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-				radius = particle[2] * 2
-				self.display.blit(self.circleSurface(radius, (0, 0, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-				
-				if(particle[2] <= 0):
-					self.blackSmokeParticles.remove(particle)
+        self.particles = {
+            'fort_smoke' : [],
+            'hit' : [],
+            'ground_hit' : [],
+            'white_smoke' : [],
+            'black_smoke' : []
+        }
 
 
-		elif(particleType == "ground_hit"):
+    def circle_surface(self, radius, color):
+        surface = pygame.Surface((radius * 2, radius * 2))
+        pygame.draw.circle(surface, color, (radius, radius), radius)
+        surface.set_colorkey((0, 0, 0))
+        return surface
 
-			for particle in self.groundParticles:
+    def add_game_particle(self, particle_type, x, y):
+        particle_type.lower()
+        if(particle_type == "fort_smoke"):
+            self.particles['fort_smoke'].append([[x, y], [random.randint(0, 3) / 2 - 1, -0.5], random.randint(16, 24)])
 
-				particle[0][0] += particle[1][0]
-				particle[0][1] += particle[1][1]
-				particle[2] -= 0.1
-				pygame.draw.circle(self.display, (25, 51, 0), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
-				radius = particle[2] * 2
-				self.display.blit(self.circleSurface(radius, (51, 25, 0)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
-				
-				if(particle[2] <= 0):
+        elif(particle_type == "hit"):
+            if(self.display.get_height() == 720 or self.display.get_height() == 1080):
+                self.particles['hit'].append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(8, 10)])
+            else:
+                self.particles['hit'].append([[x + 30, y + 30], [random.randint(0, 20) / 10 - 1, -2], random.randint(4, 6)])
 
-					self.groundParticles.remove(particle)
-		else:
+        elif(particle_type == "white_smoke"):
+            self.particles['white_smoke'].append([[x, y], [random.randint(0, 5) / 3 - 1, -1], random.randint(1, 3)])
 
-			print(f"Cannot find {particleType} in the game particles list. The particle won't be displayed.")
+        elif(particle_type == "black_smoke"):
+            self.particles['black_smoke'].append([[x, y], [random.randint(0, 5) / 3 - 1, -1], random.randint(3, 6)])
 
-	def updateParticles(self, game):
+        elif(particle_type == "ground_hit"):
+            if(self.display.get_height() == 720 or self.display.get_height() == 1080):
+                self.particles['ground_hit'].append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(4, 6)])
+            else:
+                self.particles['ground_hit'].append([[x, y], [random.randint(0, 10) / 10 - 1, -2], random.randint(2, 4)])
 
-		if(game.effects):
+        else:
+            print(f"Cannot find {particle_type} in the game particles list. The particle won't be displayed.")
 
-			self.drawGameParticles("fort_smoke")
-			self.drawGameParticles("hit")
-			self.drawGameParticles("ground_hit")
-			self.drawGameParticles("white_smoke")
-			self.drawGameParticles("black_smoke") 
+    def draw_game_particles(self, particle_type, oriented, lighting, first_color, second_color = (0, 0, 0)):
+        try:
+            for particle in self.particles[particle_type]:
+                particle[0][0] += particle[1][0]
+                particle[0][1] += particle[1][1]
+                particle[2] -= 0.1
+                if(oriented):
+                    pygame.draw.circle(self.display, first_color, [int(particle[0][1]), int(particle[0][0])], int(particle[2]))
+                else:
+                    pygame.draw.circle(self.display, first_color, [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+
+                if(lighting):
+                    radius = particle[2] * 2
+                    self.display.blit(self.circle_surface(radius, second_color), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags = pygame.BLEND_RGB_ADD)
+
+                if(particle[2] <= 0):
+                    self.particles[particle_type].remove(particle)
+        except KeyError:
+            print(f"Cannot find {particle_type} in the game particles list. The particle won't be displayed.")
+
+    def update_particles(self, game):
+        if(game.effects):
+            self.draw_game_particles("fort_smoke", True, False, (192, 192, 192))
+            self.draw_game_particles("hit", False, True, (255, 165, 0), (255, 165, 0))
+            self.draw_game_particles("ground_hit", False, True, (25, 51, 0), (51, 25, 0))
+            self.draw_game_particles("white_smoke", False, True, (128, 128, 128), (128, 128, 128))
+            self.draw_game_particles("black_smoke", False, True, (0, 0, 0), (0, 0, 0)) 

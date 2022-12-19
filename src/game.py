@@ -1,7 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -13,237 +13,211 @@ from src.enemy import *
 # Game: #
 
 class Game():
-	def __init__(self, level):
+    def __init__(self, level):
 
-		# Display:
+        # Display:
 
-		self.screenWidth = 1920
-		self.screenHeight = 1080
-		self.engineRunning = True
-		self.fpsHandler = pygame.time.Clock()
-		self.display = pygame.Surface
+        self.screen_width = 1920
+        self.screen_height = 1080
+        self.engine_running = True
+        self.fps_handler = pygame.time.Clock()
+        self.display = pygame.Surface
 
-		# Game Settings: 
+        # Game Settings: 
 
-		self.coins = 5000
-		self.kills = 0
-		self.availableBalls = 10
-		self.over = False
-		self.started = False
+        self.coins = 5000
+        self.kills = 0
+        self.available_balls = 10
+        self.over = False
+        self.started = False
 
-		# Ball Settings: 
+        # Ball Settings: 
 
-		self.ballType = 0
-		self.totalBalls = len(os.listdir('assets/ball')) - 1
+        self.ball_type = 0
+        self.total_balls = len(os.listdir('assets/ball')) - 1
 
-		# Graphics Settings: 
+        # Graphics Settings: 
 
-		self.clouds = True
-		self.effects = True
+        self.clouds = True
+        self.effects = True
 
-		# Level Settings: 
+        # Level Settings: 
 
-		self.level = level
-		self.nextLevel = False
-		self.levelDifficulty = 0
-		self.levelResetTime = 0
+        self.level = level
+        self.next_level = False
+        self.level_difficulty = 0
+        self.level_reset_timer = 0
 
-		# Difficulty: 
+        # Difficulty: 
 
-		self.gameDifficulty = 1000
-		self.difficultyMultiplier = 2
+        self.game_difficulty = 1000
+        self.difficulty_multiplier = 2
 
-		# Enemy Spawn Settings: 
+        # Enemy Spawn Settings: 
 
-		self.enemyTimer = 3000
-		self.lastEnemy = pygame.time.get_ticks()
-		self.enemiesAlive = 0
-		self.randomEnemy = 0
+        self.enemy_timer = 3000
+        self.last_enemy = pygame.time.get_ticks()
+        self.enemies_alive = 0
+        self.random_enemy = 0
 
+        # Sprite Groups: 
 
-		# Sprite Groups: 
+        self.cannon_balls = pygame.sprite.Group()
+        self.game_enemies = pygame.sprite.Group()
+        self.game_towers = pygame.sprite.Group()
 
-		self.cannonBalls = pygame.sprite.Group()
-		self.gameEnemies = pygame.sprite.Group()
-		self.gameTowers = pygame.sprite.Group()
+        # Tower Positions: 
+
+        self.tower_positionss = []
 
-		# Tower Positions: 
+        # Game Font:
 
-		self.towerPositions = []
+    def clear_window(self):
+        self.display.fill((0, 0, 0))
 
+    def start_window(self):
+        self.display = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
+        pygame.display.set_caption("Fort Defender: ")
+
+        self.tower_positionss = [
+            [self.screen_width - (self.screen_width // 7), (self.screen_height // 3) + (self.screen_height // 2)],
+            [self.screen_width - (self.screen_width // 5), (self.screen_height // 3) + (self.screen_height // 2)],
+        ]
+
+        self.game_font = pygame.font.Font(os.getcwd() + '/game_font.ttf', self.screen_width // 20)
 
-	def clearWindow(self):
-		self.display.fill((0, 0, 0))
-
-	def startWindow(self):
-		self.display = pygame.display.set_mode((self.screenWidth, self.screenHeight), pygame.FULLSCREEN)
-		pygame.display.set_caption("Fort Defender: ")
-
-		self.towerPositions = [
-			[self.screenWidth - (self.screenWidth // 7), (self.screenHeight // 3) + (self.screenHeight // 2)],
-			[self.screenWidth - (self.screenWidth // 5), (self.screenHeight // 3) + (self.screenHeight // 2)],
-		]
-
-	def drawBalls(self, particles):
-		self.cannonBalls.update(particles, self.display.get_width(), self.display.get_height())
-		self.cannonBalls.draw(self.display)
-
-	def setGameIcon(self, path : str):
-		icon = pygame.image.load(path).convert_alpha()
-		pygame.display.set_icon(icon)
-
-	def loadGameEnemies(self, enemyTypes : list, animationTypes : list, enemyHealth : list):
-		enemyAnimations = []
-
-		for enemy in enemyTypes:
-
-		    animationList = []
-
-		    for animation in animationTypes:
-
-		        tempList = []
-		        spriteFrames = len(os.listdir(f'assets/tanks/{enemy}/{animation}'))
-
-		        for i in range(spriteFrames):
-
-		            image = pygame.image.load(f'assets/tanks/{enemy}/{animation}/{i}.png').convert_alpha()
-		            enemyWidth = self.display.get_width() // 4
-		            enemyHeight = self.display.get_height() // 2
-		            image = pygame.transform.scale(image, (int(enemyWidth * 0.25), int(enemyHeight * 0.20)))
-		            tempList.append(image)
-
-		        animationList.append(tempList)
-
-		    enemyAnimations.append(animationList)
-
-		return enemyAnimations, enemyTypes, enemyHealth
-
-	def toggleMouseCursorOn(self):
-		pygame.mouse.set_visible(True)
-
-	def toggleMouseCursorOff(self):
-		pygame.mouse.set_visible(False)
-
-	def drawText(self, text : str, size : int, color : tuple, x : int, y : int):
-	    textImage = pygame.font.SysFont('Impact', size).render(text, True, color)
-	    self.display.blit(textImage, (x, y))
-
-	def loadGameImage(self, path : str, width : int, height : int):
-		image = pygame.image.load(path).convert_alpha()
-		image = pygame.transform.scale(image, (width, height))
-		return image
-
-	def loadGameSound(self, path : str, volume : float):
-		sound = pygame.mixer.Sound(path)
-		sound.set_volume(volume)
-		return sound
-
-	def destroyGame(self):
-		pygame.quit()
-
-	def updateDisplay(self, fps : int):
-		for event in pygame.event.get():
-
-			if(event.type == pygame.QUIT):
-
-				self.engineRunning = False
-
-		self.fpsHandler.tick(fps)
-		pygame.display.update()
-
-	def updateGameBalls(self, particles, ballType : int):
-		self.cannonBalls.update(particles, self.display.get_width(), self.display.get_height())
-		self.cannonBalls.draw(self.display)
-		self.ballType = ballType
-
-	def updateGameTowers(self, fort):
-		self.gameTowers.update(fort)
-		
-	def updateGameEnemies(self, particles, fort, soundStatus : bool, sound : mixer.Sound):
-		self.gameEnemies.update(self, particles, fort, soundStatus, sound)
-		self.gameEnemies.draw(self.display)
-
-	def updateGameMechanics(self, fort, enemyAnimations : list, enemyTypes : list, enemyHealth : list):
-		if(self.levelDifficulty < self.gameDifficulty):
-			
-			if(pygame.time.get_ticks() - self.lastEnemy > self.enemyTimer):
-
-				if(len(enemyTypes) == 1):
-
-					self.randomEnemy = 0
-
-				if(self.level.currentLevel == 1):
-
-					self.randomEnemy = 0
-
-				elif(self.level.currentLevel == 2):
-
-					self.randomEnemy = random.randint(0, len(enemyTypes) - 3)
-
-				else:
-
-					self.randomEnemy = random.randint(0, len(enemyTypes) - 1)
-
-				self.lastEnemy = pygame.time.get_ticks()
-
-				gameEnemy = Enemy(enemyHealth[self.randomEnemy], enemyAnimations[self.randomEnemy], 0 - (self.screenWidth // 8), self.screenHeight - self.screenHeight // 8, (self.screenWidth // 100) // 8)
-				self.gameEnemies.add(gameEnemy)
-
-				self.levelDifficulty += enemyHealth[self.randomEnemy]
-
-		if(self.levelDifficulty >= self.gameDifficulty):
-
-			self.enemiesAlive = 0
-
-			for enemy in self.gameEnemies:
-
-				if enemy.alive == True:
-
-					self.enemiesAlive += 1
-
-			if(self.enemiesAlive == 0 and self.nextLevel == False):
-
-				self.nextLevel = True
-				self.levelResetTime = pygame.time.get_ticks()
-
-		if(self.nextLevel == True):
-			textSize = 1 * (self.screenHeight // 24)
-			self.drawText('LEVEL COMPLETE', textSize, (120, 244, 20), self.screenWidth // 3 + self.screenWidth // 9, self.screenHeight // 2)
-
-			if(pygame.time.get_ticks() - self.levelResetTime > 1500):
-
-				self.nextLevel = False
-				self.level.currentLevel += 1
-				self.lastEnemy = pygame.time.get_ticks()
-				self.gameDifficulty *= self.difficultyMultiplier
-				self.levelDifficulty = 0
-				self.gameEnemies.empty()
-				self.coins += 1000
-
-		if(fort.health <= 0):
-
-			self.gameOver = True
-
-	def resetGame(self, fort):
-		textSize = 1 * (self.screenHeight // 24)
-		self.drawText('GAME OVER', textSize, (204, 0, 0), self.screenWidth // 3 + self.screenWidth // 9, self.screenHeight // 2)
-		self.drawText('PRESS "SPACE" TO RESTART', textSize, (204, 0, 0), self.screenWidth // 3 + self.screenWidth // 22, self.screenHeight // 4)
-		self.toggleMouseCursorOn()
-
-		if(pygame.key.get_pressed()[pygame.K_SPACE]):
-
-			self.over = False
-			self.kills = 0
-			self.coins = 5000
-			self.availableBalls = 10
-			self.level.currentLevel = 1
-			self.gameDifficulty = 1000
-			self.levelDifficulty = 0
-			self.lastEnemy = pygame.time.get_ticks()
-			self.gameEnemies.empty()
-			self.gameTowers.empty()
-			fort.health = 1000
-			fort.upgrades = 0
-			fort.maxHealth = 1000
-			fort.currentBalls = 8
-			self.toggleMouseCursorOff()
+    def draw_balls(self, particles):
+        self.cannon_balls.update(particles, self.screen_width, self.screen_height)
+        self.cannon_balls.draw(self.display)
+
+    def set_game_icon(self, path):
+        icon = pygame.image.load(path).convert_alpha()
+        pygame.display.set_icon(icon)
+
+    def load_game_enemies(self, enemy_types, animation_types, enemy_health):
+        enemy_animations = []
+        for enemy in enemy_types:
+            animation_list = []
+            for animation in animation_types:
+                temp_list = []
+                sprite_frames = len(os.listdir(f'assets/tanks/{enemy}/{animation}'))
+                for i in range(sprite_frames):
+                    image = pygame.image.load(f'assets/tanks/{enemy}/{animation}/{i}.png').convert_alpha()
+                    enemy_width = self.display.get_width() // 4
+                    enemy_height = self.display.get_height() // 2
+                    image = pygame.transform.scale(image, (int(enemy_width * 0.25), int(enemy_height * 0.20)))
+                    temp_list.append(image)
+                animation_list.append(temp_list)
+            enemy_animations.append(animation_list)
+        return enemy_animations, enemy_types, enemy_health
+
+    def toggle_mouse_cursor_on(self):
+        pygame.mouse.set_visible(True)
+
+    def toggle_mouse_cursor_off(self):
+        pygame.mouse.set_visible(False)
+
+    def draw_text(self, text, size, color, x, y):
+        text_image = pygame.font.SysFont('Impact', size).render(text, True, color)
+        self.display.blit(text_image, (x, y))
+
+    def load_game_image(self, path, width, height):
+        image = pygame.image.load(path).convert_alpha()
+        image = pygame.transform.scale(image, (width, height))
+        return image
+
+    def load_game_sound(self, path, volume):
+        sound = pygame.mixer.Sound(path)
+        sound.set_volume(volume)
+        return sound
+
+    def destroy_game(self):
+        pygame.quit()
+        quit()
+
+    def update_display(self, fps):
+        for event in pygame.event.get():
+            if(event.type == pygame.QUIT):
+                self.engine_running = False
+
+        self.fps_handler.tick(fps)
+        pygame.display.update()
+
+    def update_game_balls(self, particles, ball_type):
+        self.cannon_balls.update(particles)
+        self.cannon_balls.draw(self.display)
+        self.ball_type = ball_type
+
+    def update_game_towers(self, fort):
+        self.game_towers.update(fort)
+        
+    def update_game_enemies(self, particles, fort, sounds):
+        self.game_enemies.update(self, particles, fort, sounds)
+        self.game_enemies.draw(self.display)
+
+    def update_game_mechanics(self, fort, enemy_animations, enemy_types, enemy_health):
+        if(self.level_difficulty < self.game_difficulty):
+            if(pygame.time.get_ticks() - self.last_enemy > self.enemy_timer):
+                if(len(enemy_types) == 1):
+                    self.random_enemy = 0
+
+                if(self.level.current_level == 1):
+                    self.random_enemy = 0
+                elif(self.level.current_level == 2):
+                    self.random_enemy = random.randint(0, len(enemy_types) - 3)
+                else:
+                    self.random_enemy = random.randint(0, len(enemy_types) - 1)
+
+                self.last_enemy = pygame.time.get_ticks()
+
+                game_enemy = Enemy(enemy_health[self.random_enemy], enemy_animations[self.random_enemy], 0 - (self.screen_width // 8), self.screen_height - self.screen_height // 8, (self.screen_width // 100) // 8)
+                self.game_enemies.add(game_enemy)
+                self.level_difficulty += enemy_health[self.random_enemy]
+
+        if(self.level_difficulty >= self.game_difficulty):
+            self.enemies_alive = 0
+            for enemy in self.game_enemies:
+                if enemy.alive == True:
+                    self.enemies_alive += 1
+
+            if(self.enemies_alive == 0 and self.next_level == False):
+                self.next_level = True
+                self.level_reset_timer = pygame.time.get_ticks()
+
+        if(self.next_level == True):
+            text_size = 1 * (self.screen_height // 24)
+            self.draw_text('LEVEL COMPLETE', text_size, (120, 244, 20), self.screen_width // 3 + self.screen_width // 9, self.screen_height // 2)
+            if(pygame.time.get_ticks() - self.level_reset_timer > 1500):
+                self.next_level = False
+                self.level.current_level += 1
+                self.last_enemy = pygame.time.get_ticks()
+                self.game_difficulty *= self.difficulty_multiplier
+                self.level_difficulty = 0
+                self.game_enemies.empty()
+                self.coins += 1000
+
+        if(fort.health <= 0):
+            self.game_over = True
+
+    def reset_game(self, fort):
+        text_size = 1 * (self.screen_height // 24)
+        self.draw_text('GAME OVER', text_size, (204, 0, 0), self.screen_width // 3 + self.screen_width // 9, self.screen_height // 2)
+        self.draw_text('PRESS "SPACE" TO RESTART', text_size, (204, 0, 0), self.screen_width // 3 + self.screen_width // 22, self.screen_height // 4)
+        self.toggle_mouse_cursor_on()
+
+        if(pygame.key.get_pressed()[pygame.K_SPACE]):
+            self.over = False
+            self.kills = 0
+            self.coins = 5000
+            self.available_balls = 10
+            self.level.current_level = 1
+            self.game_difficulty = 1000
+            self.level_difficulty = 0
+            self.last_enemy = pygame.time.get_ticks()
+            self.game_enemies.empty()
+            self.game_towers.empty()
+            fort.health = 1000
+            fort.upgrades = 0
+            fort.max_health = 1000
+            fort.current_balls = 8
+            self.toggle_mouse_cursor_off()

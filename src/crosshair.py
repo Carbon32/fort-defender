@@ -1,7 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -12,21 +12,21 @@ from src.modules import *
 # Crosshair: #
 
 class Crosshair():
-	def __init__(self, game : pygame.Surface):
+    def __init__(self, game):
 
-		# Display: 
+        # Display: 
 
-		self.game = game
+        self.game = game
 
-		# Crosshair Sprite: 
+        # Crosshair Sprite: 
 
-		self.crosshair = self.game.loadGameImage('assets/crosshair/crosshair.png', 32, 32)
+        self.crosshair = self.game.load_game_image('assets/crosshair/crosshair.png', 32, 32)
 
-		# Crosshair Rectangle: 
+        # Crosshair Rectangle: 
 
-		self.rect = self.crosshair.get_rect()
+        self.rect = self.crosshair.get_rect()
         
-	def drawCrosshair(self):
-		position = pygame.mouse.get_pos()
-		self.rect.center = (position[0], position[1])
-		self.game.display.blit(self.crosshair, self.rect)
+    def draw_crosshair(self):
+        position = pygame.mouse.get_pos()
+        self.rect.center = (position[0], position[1])
+        self.game.display.blit(self.crosshair, self.rect)

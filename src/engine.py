@@ -1,7 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -26,120 +26,104 @@ from src.ui import *
 # Game Resolution: #
 
 class Resolution():
-	def __init__(self, game):
-		
-		# Game: 
+    def __init__(self, game):
+        
+        # Game: 
 
-		self.game = game
+        self.game = game
 
-		# Display:
+        # Display:
 
-		self.resolutionWindow = pygame.display.set_mode((300, 400))
-		pygame.display.set_caption("Fort Defender: ")
-		pygame.display.set_icon(self.game.loadGameImage('assets/icon.png', 32, 32))
-		self.resolutionStatus = True
+        self.resolution_window = pygame.display.set_mode((300, 400))
+        pygame.display.set_caption("Fort Defender: ")
+        pygame.display.set_icon(self.game.load_game_image('assets/icon.png', 32, 32))
+        self.resolution_status = True
 
-		# Background:
+        # Background:
 
-		self.background = self.game.loadGameImage('assets/menu.png', 300, 400)
+        self.background = self.game.load_game_image('assets/menu.png', 300, 400)
 
-		# Buttons: 
+        # Buttons: 
 
-		self.resolutionA = Button(self.resolutionWindow, 0, 0, self.game.loadGameImage('assets/resolution/D.png', 150, 150)) # 800 x 600
-		self.resolutionB = Button(self.resolutionWindow, 150, 0, self.game.loadGameImage('assets/resolution/C.png', 150, 150)) # 1024 x 768
-		self.resolutionC = Button(self.resolutionWindow, 0, 150, self.game.loadGameImage('assets/resolution/B.png', 150, 150)) # 1280 x 720
-		self.resolutionD = Button(self.resolutionWindow, 150, 150, self.game.loadGameImage('assets/resolution/A.png', 150, 150)) # 1920 x 1080
+        self.resolution_a = ButtonImage(self.resolution_window, 0, 0, self.game.load_game_image('assets/resolution/D.png', 150, 150)) # 800 x 600
+        self.resolution_b = ButtonImage(self.resolution_window, 150, 0, self.game.load_game_image('assets/resolution/C.png', 150, 150)) # 1024 x 768
+        self.resolution_c = ButtonImage(self.resolution_window, 0, 150, self.game.load_game_image('assets/resolution/B.png', 150, 150)) # 1280 x 720
+        self.resolution_d = ButtonImage(self.resolution_window, 150, 150, self.game.load_game_image('assets/resolution/A.png', 150, 150)) # 1920 x 1080
 
-	def updateBackground(self):
-		self.resolutionWindow.fill((255, 255, 255))
-		self.resolutionWindow.blit(self.background, (0, 0))
+    def update_background(self):
+        self.resolution_window.fill((255, 255, 255))
+        self.resolution_window.blit(self.background, (0, 0))
 
-	def setResolution(self, screenWidth : int, screenHeight : int):
-		self.game.screenWidth = screenWidth
-		self.game.screenHeight = screenHeight
-		self.resolutionStatus = False
+    def set_resolution(self, screen_width, screen_height):
+        self.game.screen_width = screen_width
+        self.game.screen_height = screen_height
+        self.resolution_status = False
 
-	def updateWindow(self):
-		for event in pygame.event.get():
-
-			if(event.type == pygame.QUIT):
-
-				self.resolutionStatus = False
-				self.game.destroyGame()
-		pygame.display.update()
+    def update_window(self):
+        for event in pygame.event.get():
+            if(event.type == pygame.QUIT):
+                self.resolution_status = False
+                self.game.destroy_game()
+        pygame.display.update()
 
 
 # Game Graphics: #
 
 class Graphics():
-	def __init__(self, game):
-		
-		# Game: 
+    def __init__(self, game):
+        
+        # Game: 
 
-		self.game = game
+        self.game = game
 
-		# Display:
+        # Display:
 
-		self.graphicsWindows = pygame.display.set_mode((300, 400))
-		pygame.display.set_caption("Fort Defender: ")
-		pygame.display.set_icon(self.game.loadGameImage('assets/icon.png', 32, 32))
-		self.graphicsStatus = True
+        self.graphics_window = pygame.display.set_mode((300, 400))
+        pygame.display.set_caption("Fort Defender: ")
+        pygame.display.set_icon(self.game.load_game_image('assets/icon.png', 32, 32))
+        self.graphics_status = True
 
-		# Background:
+        # Background:
 
-		self.background = self.game.loadGameImage('assets/menu.png', 300, 400)
+        self.background = self.game.load_game_image('assets/menu.png', 300, 400)
 
-		# Buttons: 
+        # Buttons: 
 
-		self.effects = Button(self.graphicsWindows, 0, 0, self.game.loadGameImage('assets/graphics/AOn.png', 150, 150)) 
-		self.clouds = Button(self.graphicsWindows, 150, 0, self.game.loadGameImage('assets/graphics/BOn.png', 150, 150))
-		self.start = Button(self.graphicsWindows, 75, 250, self.game.loadGameImage('assets/graphics/start.png', 150, 150)) 
+        self.effects = ButtonImage(self.graphics_window, 0, 0, self.game.load_game_image('assets/graphics/A_on.png', 150, 150)) 
+        self.clouds = ButtonImage(self.graphics_window, 150, 0, self.game.load_game_image('assets/graphics/B_on.png', 150, 150))
+        self.start = ButtonImage(self.graphics_window, 75, 250, self.game.load_game_image('assets/graphics/start.png', 150, 150)) 
 
-	def updateBackground(self):
-		self.graphicsWindows.fill((255, 255, 255))
-		self.graphicsWindows.blit(self.background, (0, 0))
+    def update_background(self):
+        self.graphics_window.fill((255, 255, 255))
+        self.graphics_window.blit(self.background, (0, 0))
 
-	def setClouds(self):
-		if(self.game.clouds):
+    def set_clouds(self):
+        if(self.game.clouds):
+            self.game.clouds = False
+        else:
+            self.game.clouds = True
 
-			self.game.clouds = False
+    def set_effects(self):
+        if(self.game.effects):
+            self.game.effects = False
+        else:
+            self.game.effects = True
 
-		else:
+    def update_window(self):
 
-			self.game.clouds = True
+        if(self.game.effects):
+            self.effects.change_button(self.game.load_game_image('assets/graphics/A_on.png', 150, 150))
+        else:
+            self.effects.change_button(self.game.load_game_image('assets/graphics/A_off.png', 150, 150)) 
 
-	def setEffects(self):
-		if(self.game.effects):
+        if(self.game.clouds):
+            self.clouds.change_button(self.game.load_game_image('assets/graphics/B_on.png', 150, 150)) 
+        else:
+            self.clouds.change_button(self.game.load_game_image('assets/graphics/B_off.png', 150, 150)) 
 
-			self.game.effects = False
-
-		else:
-
-			self.game.effects = True
-
-	def updateWindow(self):
-
-		if(self.game.effects):
-
-			self.effects.changeButton(self.game.loadGameImage('assets/graphics/AOn.png', 150, 150))
-
-		else:
-
-			self.effects.changeButton(self.game.loadGameImage('assets/graphics/AOff.png', 150, 150)) 
-
-		if(self.game.clouds):
-
-			self.clouds.changeButton(self.game.loadGameImage('assets/graphics/BOn.png', 150, 150)) 
-
-		else:
-
-			self.clouds.changeButton(self.game.loadGameImage('assets/graphics/BOff.png', 150, 150)) 
-
-		for event in pygame.event.get():
-
-			if(event.type == pygame.QUIT):
-
-				self.resolutionStatus = False
-				self.game.destroyGame()
-		pygame.display.update()
+        for event in pygame.event.get():
+            if(event.type == pygame.QUIT):
+                self.resolution_status = False
+                self.game.destroy_game()
+        pygame.display.update()
 

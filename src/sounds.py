@@ -1,7 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -12,33 +12,33 @@ from src.modules import *
 # Sounds: #
 
 class Sounds():
-	def __init__(self, game):
+    def __init__(self, game):
 
-		# Game:
+        # Game:
 
-		self.game = game
+        self.game = game
 
-		# Music:
+        # Music:
 
-		self.musicStatus = True
+        self.music_status = True
 
-		# Sounds: 
+        # Sounds: 
 
-		self.soundStatus = True
+        self.sound_status = True
 
-		# Available Sounds: 
+        # Available Sounds: 
 
-		self.shoot = self.game.loadGameSound('sounds/shoot.wav', 0.2)
-		self.explosion = self.game.loadGameSound('sounds/explosion.mp3', 0.2)
-		self.build = self.game.loadGameSound('sounds/build.mp3', 0.2)
-		self.ballLoad = self.game.loadGameSound('sounds/ball_load.mp3', 0.2)
-		self.error = self.game.loadGameSound('sounds/no.wav', 0.2)
+        self.shoot = self.game.load_game_sound('sounds/shoot.wav', 0.2)
+        self.explosion = self.game.load_game_sound('sounds/explosion.mp3', 0.2)
+        self.build = self.game.load_game_sound('sounds/build.mp3', 0.2)
+        self.ball_load = self.game.load_game_sound('sounds/ball_load.mp3', 0.2)
+        self.error = self.game.load_game_sound('sounds/no.wav', 0.2)
 
 
-	def playMusic(self):
-		pygame.mixer.music.load('sounds/music.mp3')
-		pygame.mixer.music.set_volume(10)
-		pygame.mixer.music.play(-1, 0.0, 5000)
+    def play_music(self):
+        pygame.mixer.music.load('sounds/music.mp3')
+        pygame.mixer.music.set_volume(10)
+        pygame.mixer.music.play(-1, 0.0, 5000)
 
-	def stopMusic(self):
-		pygame.mixer.music.stop()
+    def stop_music(self):
+        pygame.mixer.music.stop()

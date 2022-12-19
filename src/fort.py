@@ -1,7 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -13,205 +13,157 @@ from src.ball import *
 # Fort: #
 
 class Fort():
-	def __init__(self, game, x : int, y : int, health : int):
+    def __init__(self, game, x, y, health):
 
-    	# Game: 
+        # Game: 
 
-		self.game = game
+        self.game = game
 
-    	# Fort Settings: 
+        # Fort Settings: 
 
-		self.health = health
-		self.maxHealth = self.health
-		self.alreadyFired = False
-		self.upgrades = 0
-		self.reloadTime = 2000
-		self.startReload = False
-		self.timerReload = 0
+        self.health = health
+        self.max_health = self.health
+        self.already_fired = False
+        self.upgrades = 0
+        self.reload_time = 2000
+        self.start_reload = False
+        self.timer_reload = 0
 
         # Fort Sprites: 
 
-		self.fortImages = [self.game.loadGameImage(f'assets/fort/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/fort')))]
-		self.fortUpgrades = [self.game.loadGameImage(f'assets/upgrades/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/upgrades')))]
-		self.construction = [self.game.loadGameImage(f'assets/construction/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/construction')))]
-		self.image = self.fortImages[0]
+        self.fort_images = [self.game.load_game_image(f'assets/fort/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/fort')))]
+        self.fort_upgrades = [self.game.load_game_image(f'assets/upgrades/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/upgrades')))]
+        self.construction = [self.game.load_game_image(f'assets/construction/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/construction')))]
+        self.image = self.fort_images[0]
 
-		# Construction Settings:
+        # Construction Settings:
 
-		self.constructionStart = False
-		self.constructionAnimations = 0
-		self.constructionCurrentTime = pygame.time.get_ticks()
-		self.constructionTimer = 500
+        self.construction_start = False
+        self.construction_animations = 0
+        self.construction_current_time = pygame.time.get_ticks()
+        self.construction_timer = 500
 
-		# Ball Settings:
+        # Ball Settings:
 
-		self.currentBalls = 8
-		self.ballType = 0
-		self.totalBalls = len(os.listdir('assets/ball')) - 1
+        self.current_balls = 8
+        self.ball_type = 0
+        self.total_balls = len(os.listdir('assets/ball')) - 1
 
         # Fort Rectangle: 
 
-		self.rect = self.image.get_rect()
-		self.rect.x = x
-		self.rect.y = y
-
-	def fireBall(self, particles, soundStatus : bool, sound : mixer.Sound):
-		position = pygame.mouse.get_pos()
-		xDistance = (position[0] - self.rect.midleft[0])
-		yDistance = -(position[1] - self.rect.midleft[1])
-		self.angle = math.degrees(math.atan2(yDistance, xDistance))
-
-		accuracy = random.randint(-5, 5)
-
-		if(pygame.mouse.get_pressed()[0] and self.alreadyFired == False and self.currentBalls > 0 and position[0] < (self.game.screenWidth // 2) + (self.game.screenWidth // 3)):
-
-			ball = Ball(self.game, self.rect.midleft[0] + 30, self.rect.midleft[1] - 25, self.angle + accuracy, self.ballType)
-
-			self.game.cannonBalls.add(ball)
-
-			self.alreadyFired = True
-			self.currentBalls -= 1
-
-
-			if(soundStatus):
-
-				sound.play()
-
-			if(self.game.screenWidth == 1280 or self.game.screenWidth == 1920):
-
-				particles.addGameParticle("fort_smoke",  (self.rect.midleft[0] // 2) - (self.rect.midleft[1] // 12 - self.rect.midleft[1] // 6), self.rect.midleft[0]  + (self.rect.midleft[1] // 16))
-
-			else:
-
-				particles.addGameParticle("fort_smoke",  self.rect.midleft[0] - (self.rect.midleft[1] // 3), self.rect.midleft[0]  + (self.rect.midleft[1] // 16))
-
-		if(pygame.mouse.get_pressed()[0] == False):
-
-			self.alreadyFired = False
-
-		if(self.startReload == False and self.currentBalls == 0):
-
-			self.timerReload = pygame.time.get_ticks()
-			self.startReload = True
-
-		if(self.currentBalls == 0 and self.game.availableBalls >= 8):
-
-			if(pygame.time.get_ticks() - self.timerReload > self.reloadTime):
-
-				self.currentBalls = 8
-				self.game.availableBalls -= 8
-				self.startReload = False
-
-		if(self.currentBalls == 0 and self.game.availableBalls >= 1):
-
-			if(pygame.time.get_ticks() - self.timerReload > self.reloadTime):
-
-				self.currentBalls = self.game.availableBalls
-				self.game.availableBalls -= self.game.availableBalls
-				self.startReload = False
-
-
-	def drawFort(self):
-		if(self.health <= 250):
-
-			self.image = self.fortImages[2]
-
-		elif(self.health <= 500):
-
-			self.image = self.fortImages[1]
-
-		else:
-
-			self.image = self.fortImages[0]
-
-
-		self.game.display.blit(self.image, self.rect)
-		self.game.display.blit(self.fortUpgrades[self.upgrades], self.rect)
-		self.game.display.blit(self.construction[self.constructionAnimations], self.rect)
-
-		pygame.draw.rect(self.game.display, (250, 0, 0), (10, 10, self.rect.w, 24))
-		pygame.draw.rect(self.game.display, (0, 250, 0), (10, 10, self.rect.w * (self.health / self.maxHealth), 24))
-		pygame.draw.rect(self.game.display, (0, 0, 0), (10, 10, self.rect.w, 24), 2)
-		self.game.drawText('(' + str(self.health) + "/" + str(self.maxHealth) + ")", 1 * (self.game.screenHeight // 52), (69, 69, 69), self.game.screenWidth // 16, 10)
-
-		if(self.constructionStart):
-
-			if(pygame.time.get_ticks() - self.constructionCurrentTime >= self.constructionTimer):
-
-				self.constructionCurrentTime = pygame.time.get_ticks()
-
-				if(self.constructionAnimations < len(self.construction) - 1):
-
-					self.constructionAnimations += 1
-
-				else:
-
-					self.constructionStart = False
-					self.constructionAnimations = 0
-
-	def repairFort(self, soundStatus, sound : mixer.Sound, error : mixer.Sound):
-		if(self.game.coins >= 500 and self.health < self.maxHealth):
-
-			self.health += 250
-			self.game.coins -= 500
-
-			if(self.health > self.maxHealth):
-
-				self.health = self.maxHealth
-
-			if(soundStatus):
-
-				sound.play()
-
-		else:
-
-			error.play()
-
-	def upgradeBalls(self, soundStatus : bool, sound : mixer.Sound, error : mixer.Sound):
-		if(self.game.coins >= 5000 and self.ballType != self.totalBalls):
-
-				self.ballType += 1
-				self.game.coins -= 5000
-
-				if(soundStatus):
-					sound.play()
-
-		else:
-
-			error.play()
-
-	def upgradeArmour(self, soundStatus : bool, sound : mixer.Sound, error : mixer.Sound):
-		if(self.game.coins >= 1000 and not self.constructionStart):
-
-			self.maxHealth += 500
-			self.game.coins -= 1000
-			self.constructionStart = True
-
-			if(self.upgrades < 3):
-
-				self.upgrades += 1
-
-			else:
-
-				self.upgrades = 3
-
-			if(soundStatus):
-
-				sound.play()
-
-		else:
-
-			error.play()
-
-	def addBalls(self, soundStatus : bool, sound : mixer.Sound, error : mixer.Sound):
-		if(self.game.coins >= 250):
-
-				self.game.availableBalls += 5
-				self.game.coins -= 250
-
-				if(soundStatus):
-					sound.play()
-
-		else:
-
-			error.play()
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def fire_ball(self, particles, sounds):
+        position = pygame.mouse.get_pos()
+        x_distance = (position[0] - self.rect.midleft[0])
+        y_distance = -(position[1] - self.rect.midleft[1])
+        self.angle = math.degrees(math.atan2(y_distance, x_distance))
+        accuracy = random.randint(-5, 5)
+        if(pygame.mouse.get_pressed()[0] and self.already_fired == False and self.current_balls > 0 and position[0] < (self.game.screen_width // 2) + (self.game.screen_width // 3)):
+            ball = Ball(self.game, self.rect.midleft[0] + 30, self.rect.midleft[1] - 25, self.angle + accuracy, self.ball_type)
+            self.game.cannon_balls.add(ball)
+            self.already_fired = True
+            self.current_balls -= 1
+
+            if(sounds.sound_status):
+                sounds.shoot.play()
+
+            if(self.game.screen_width == 1280 or self.game.screen_width == 1920):
+                particles.add_game_particle("fort_smoke", (self.rect.midleft[0] // 2) - (self.rect.midleft[1] // 12 - self.rect.midleft[1] // 6), self.rect.midleft[0]  + (self.rect.midleft[1] // 16))
+            else:
+                particles.add_game_particle("fort_smoke", self.rect.midleft[0] - (self.rect.midleft[1] // 3), self.rect.midleft[0]  + (self.rect.midleft[1] // 16))
+
+        if(pygame.mouse.get_pressed()[0] == False):
+            self.already_fired = False
+
+        if(self.start_reload == False and self.current_balls == 0):
+            self.timer_reload = pygame.time.get_ticks()
+            self.start_reload = True
+
+        if(self.current_balls == 0 and self.game.available_balls >= 8):
+            if(pygame.time.get_ticks() - self.timer_reload > self.reload_time):
+                self.current_balls = 8
+                self.game.available_balls -= 8
+                self.start_reload = False
+
+        if(self.current_balls == 0 and self.game.available_balls >= 1):
+            if(pygame.time.get_ticks() - self.timer_reload > self.reload_time):
+                self.current_balls = self.game.available_balls
+                self.game.available_balls -= self.game.available_balls
+                self.start_reload = False
+
+
+    def draw_fort(self):
+        if(self.health <= 250):
+            self.image = self.fort_images[2]
+
+        elif(self.health <= 500):
+            self.image = self.fort_images[1]
+        else:
+            self.image = self.fort_images[0]
+
+        self.game.display.blit(self.image, self.rect)
+        self.game.display.blit(self.fort_upgrades[self.upgrades], self.rect)
+        self.game.display.blit(self.construction[self.construction_animations], self.rect)
+
+        pygame.draw.rect(self.game.display, (250, 0, 0), (10, 10, self.rect.w, 24))
+        pygame.draw.rect(self.game.display, (0, 250, 0), (10, 10, self.rect.w * (self.health / self.max_health), 24))
+        pygame.draw.rect(self.game.display, (0, 0, 0), (10, 10, self.rect.w, 24), 2)
+        self.game.draw_text('(' + str(self.health) + "/" + str(self.max_health) + ")", 1 * (self.game.screen_height // 52), (69, 69, 69), self.game.screen_width // 16, 10)
+
+        if(self.construction_start):
+            if(pygame.time.get_ticks() - self.construction_current_time >= self.construction_timer):
+                self.construction_current_time = pygame.time.get_ticks()
+
+                if(self.construction_animations < len(self.construction) - 1):
+                    self.construction_animations += 1
+                else:
+                    self.construction_start = False
+                    self.construction_animations = 0
+
+    def repair_fort(self, sounds):
+        if(self.game.coins >= 500 and self.health < self.max_health):
+            self.health += 250
+            self.game.coins -= 500
+
+            if(self.health > self.max_health):
+                self.health = self.max_health
+
+            if(sounds.sound_status):
+                sounds.build.play()
+        else:
+            sounds.error.play()
+
+    def upgrade_balls(self, sounds):
+        if(self.game.coins >= 5000 and self.ball_type != self.total_balls):
+                self.ball_type += 1
+                self.game.coins -= 5000
+                if(sounds.sound_status):
+                    sounds.ball_load.play()
+        else:
+            sounds.error.play()
+
+    def upgrade_armour(self, sounds):
+        if(self.game.coins >= 1000 and not self.construction_start):
+            self.max_health += 500
+            self.game.coins -= 1000
+            self.construction_start = True
+            if(self.upgrades < 3):
+                self.upgrades += 1
+            else:
+                self.upgrades = 3
+            if(sounds.sound_status):
+                sounds.build.play()
+        else:
+            sounds.error.play()
+
+    def add_balls(self, sounds):
+        if(self.game.coins >= 250):
+                self.game.available_balls += 5
+                self.game.coins -= 250
+                if(sounds.sound_status):
+                    sounds.ball_load.play()
+        else:
+            sounds.error.play()

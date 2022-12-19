@@ -1,21 +1,21 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Imports: #
 
 try:
-	import pygame 
-	import math
-	import random
-	import os
-	from pygame import mixer
+    import pygame 
+    import math
+    import random
+    import os
+    from pygame import mixer
 
 except ImportError:
-	raise ImportError("The Defender Engine couldn't import all of the necessary packages.")
+    raise ImportError("The Defender Engine couldn't import all of the necessary packages.")
 
 # Pygame Initialization: #
 

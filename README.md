@@ -65,6 +65,7 @@ To be able to run Fort Defender, you need to have Pygame installed on your compu
 <a href="https://vnitti.itch.io">Vnitti (Background)</a><br>
 <a href="https://kassjak.itch.io">_Kassjak_ (Clouds)</a><br>
 <a href="https://www.deviantart.com/dietdoctorsprite">DietDoctorSprite (Tanks)</a><br>
+<a href="https://www.dafont.com/happy-4.font">Graphix Line Studio (Font)</a><br>
 
 ## Changelog:
 

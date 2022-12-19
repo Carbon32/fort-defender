@@ -3,13 +3,7 @@
 #                    Fort Defender, defender video game                       #
 #                              Developer: Carbon                              #
 #                                                                             #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
-'''
-
-- Split Game Code []
-
-'''
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Imports: #
 
@@ -33,55 +27,44 @@ graphics = Graphics(game)
 
 # Resoltuion Selection: #
 
-while(resolution.resolutionStatus):
-
-    resolution.updateBackground()
-
-    if(resolution.resolutionA.render()):
-
-        resolution.setResolution(800, 600)
+while(resolution.resolution_status):
+    resolution.update_background()
+    if(resolution.resolution_a.render()):
+        resolution.set_resolution(800, 600)
         break
 
-    if(resolution.resolutionB.render()):
-
-        resolution.setResolution(1024, 768)
+    if(resolution.resolution_b.render()):
+        resolution.set_resolution(1024, 768)
         break
 
-    if(resolution.resolutionC.render()):
-
-        resolution.setResolution(1280, 720)
+    if(resolution.resolution_c.render()):
+        resolution.set_resolution(1280, 720)
         break
 
-    if(resolution.resolutionD.render()):
-
-        resolution.setResolution(1920, 1080)
+    if(resolution.resolution_d.render()):
+        resolution.set_resolution(1920, 1080)
         break
 
-    resolution.updateWindow()
+    resolution.update_window()
 
 # Graphics Selection: #
 
-while(graphics.graphicsStatus):
-
-    graphics.updateBackground()
-
+while(graphics.graphics_status):
+    graphics.update_background()
     if(graphics.clouds.render()):
-
-        graphics.setClouds()
+        graphics.set_clouds()
 
     if(graphics.effects.render()):
-
-        graphics.setEffects()
+        graphics.set_effects()
 
     if(graphics.start.render()):
-
         break
 
-    graphics.updateWindow()
+    graphics.update_window()
 
 # Start Window: 
 
-game.startWindow()
+game.start_window()
 
 # Sound: #
 
@@ -113,106 +96,90 @@ crosshair = Crosshair(game)
 
 # Fort: #
 
-fort = Fort(game, game.screenWidth // 3 + game.screenWidth // 2, game.screenHeight // 5 + game.screenHeight // 2, 1000)
+fort = Fort(game, game.screen_width // 3 + game.screen_width // 2, game.screen_height // 5 + game.screen_height // 2, 1000)
 
 # Fade:
 
-startFade = Fade(game.display, 1, ((0, 0, 0)), 30)
+start_fade = Fade(game.display, 1, ((0, 0, 0)), 30)
 
 # Game Icon: #
 
-game.setGameIcon("assets/tanks/light_tank/move/0.png")
+game.set_game_icon("assets/tanks/light_tank/move/0.png")
 
 # Enemy Settings: #
 
-enemyAnimations, enemyTypes, enemyHealth = game.loadGameEnemies(['light_tank', 'heavy_tank', 'attack_tank', 'desert_tank', 'offensive_tank', 'camo_tank'], ['move', 'attack', 'explosion'], [50, 125, 250, 350, 450, 500])
+enemy_animations, enemy_types, enemy_health = game.load_game_enemies(['light_tank', 'heavy_tank', 'attack_tank', 'desert_tank', 'offensive_tank', 'camo_tank'], ['move', 'attack', 'explosion'], [50, 125, 250, 350, 450, 500])
 
 # Music: #
 
-sounds.playMusic()
+sounds.play_music()
 
 # Game Loop: #
 
-while(game.engineRunning):
+while(game.engine_running):
 
     # Clear Window: 
 
-    game.clearWindow()
+    game.clear_window()
 
      # Menu:
 
-    if(menu.menuStatus):
-
-        menu.handleMenu(sounds.musicStatus, sounds.soundStatus)
-
-        if(menu.buttonStart.render()):
-
+    if(menu.menu_status):
+        menu.handle_menu(sounds)
+        if(menu.button_start.render()):
             if(not game.started):
-                menu.menuStatus = False
-                game.toggleMouseCursorOff()
-                menu.gameStarted()
+                menu.menu_status = False
+                game.toggle_mouse_cursor_off()
                 game.started = True
-
             else:
+                menu.menu_status = False
+                game.toggle_mouse_cursor_off()
 
-                menu.menuStatus = False
-                game.toggleMouseCursorOff()
+        if(menu.button_quit.render()):
+            game.engine_running = False
 
-        if(menu.buttonQuit.render()):
-
-            game.engineRunning = False
-
-        if(menu.buttonMusic.render()):
-
-            if(sounds.musicStatus):
-
-                sounds.musicStatus = False
-                sounds.stopMusic()
-
+        if(menu.button_music.render()):
+            if(sounds.music_status):
+                sounds.music_status = False
+                sounds.stop_music()
             else:
+                sounds.music_status = True
+                sounds.play_music()
 
-                sounds.musicStatus = True
-                sounds.playMusic()
-
-        if(menu.buttonSound.render()):
-
-            if(sounds.soundStatus):
-
-                sounds.soundStatus = False
-
+        if(menu.button_sound.render()):
+            if(sounds.sound_status):
+                sounds.sound_status = False
             else:
-
-                sounds.soundStatus = True
-
+                sounds.sound_status = True
     else:
 
         # Sky:
 
-        background.updateGameBackground()
+        background.update_game_background()
 
         # Time: 
 
-        background.updateTime()
+        background.update_time()
 
         # Ground: 
 
-        background.drawLevelDesign(0, 0)
+        background.draw_level_design(0, 0)
 
         # Game Particles: 
 
-        particles.updateParticles(game)
+        particles.update_particles(game)
 
         # Clouds:
 
-        clouds.handleClouds()
+        clouds.handle_clouds()
 
         # Fort: 
 
-        fort.drawFort()
+        fort.draw_fort()
 
         # Check for Menu:
 
-        menu.checkMenu()
+        menu.check_menu()
 
         # Game Status: 
 
@@ -220,61 +187,51 @@ while(game.engineRunning):
 
             # User Interface: 
 
-            ui.showStats(fort, level.currentLevel)
+            ui.show_stats(fort)
 
             # Button Functionality:
 
-            if(ui.buttonRepair.render()):
+            if(ui.button_repair.render()):
+                fort.repair_fort(sounds)
 
-                fort.repairFort(sounds.soundStatus, sounds.build,  sounds.error)
+            if(ui.button_armour.render()):
+                fort.upgrade_armour(sounds)
 
-            if(ui.buttonArmour.render()):
-
-                fort.upgradeArmour(sounds.soundStatus, sounds.build,  sounds.error)
-
-            if(ui.buttonTower.render()):
-
-                if(game.coins >= 2000 and len(game.gameTowers) < 2):
-
-                    tower = Tower(game, game.towerPositions[len(game.gameTowers)][0], game.towerPositions[len(game.gameTowers)][1])
-                    game.gameTowers.add(tower)
+            if(ui.button_tower.render()):
+                if(game.coins >= 2000 and len(game.game_towers) < 2):
+                    tower = Tower(game, game.tower_positionss[len(game.game_towers)][0], game.tower_positionss[len(game.game_towers)][1])
+                    game.game_towers.add(tower)
                     game.coins -= 2000
 
-            if(ui.buttonBalls.render()):
+            if(ui.button_balls.render()):
+                fort.add_balls(sounds)
 
-                fort.addBalls(sounds.soundStatus, sounds.ballLoad, sounds.error)
+            if(ui.button_ball_type.render()):
+                fort.upgrade_balls(sounds)
 
-            if(ui.buttonBallType.render()):
-
-                fort.upgradeBalls(sounds.soundStatus, sounds.ballLoad, sounds.error)
-
-            if(startFade.fade(game.screenWidth, game.screenHeight) and game.over == False):
-
-                fort.fireBall(particles, sounds.soundStatus, sounds.shoot)
+            if(start_fade.fade(game.screen_width, game.screen_height) and game.over == False):
+                fort.fire_ball(particles, sounds)
 
                 # Sprites: 
 
-                game.updateGameTowers(fort)
-                game.updateGameBalls(particles, fort.ballType)
-                game.updateGameEnemies(particles, fort, sounds.soundStatus, sounds.explosion)
-                game.updateGameMechanics(fort, enemyAnimations, enemyTypes, enemyHealth)
+                game.update_game_towers(fort)
+                game.update_game_balls(particles, fort.ball_type)
+                game.update_game_enemies(particles, fort, sounds)
+                game.update_game_mechanics(fort, enemy_animations, enemy_types, enemy_health)
 
             if(fort.health <= 0):
-
                 game.over = True
 
             # Crosshair: 
 
-            crosshair.drawCrosshair()
-
+            crosshair.draw_crosshair()
         else:
-
-            game.resetGame(fort)
+            game.reset_game(fort)
 
     # Update Display: 
 
-    game.updateDisplay(60)
+    game.update_display(60)
 
 # Quit: #
 
-game.destroyGame()
+game.destroy_game()

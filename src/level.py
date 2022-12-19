@@ -1,15 +1,15 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #                                                                             #
 #                 Defender Engine, Fort Defender's Game Engine                #
-#                              Developer: Carbon              				  #
+#                              Developer: Carbon                              #
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Levels: #
 
 class Level():
-	def __init__(self):
+    def __init__(self):
 
-		# Level Settings:
+        # Level Settings:
 
-		self.currentLevel = 1
+        self.current_level = 1
