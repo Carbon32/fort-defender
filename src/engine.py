@@ -34,21 +34,21 @@ class Resolution():
 
         # Display:
 
-        self.resolution_window = pygame.display.set_mode((300, 400))
+        self.resolution_window = pygame.display.set_mode((400, 500))
         pygame.display.set_caption("Fort Defender: ")
         pygame.display.set_icon(self.game.load_game_image('assets/icon.png', 32, 32))
         self.resolution_status = True
 
         # Background:
 
-        self.background = self.game.load_game_image('assets/menu.png', 300, 400)
+        self.background = self.game.load_game_image('assets/menu.png', 400, 500)
 
         # Buttons: 
 
-        self.resolution_a = ButtonImage(self.resolution_window, 0, 0, self.game.load_game_image('assets/resolution/D.png', 150, 150)) # 800 x 600
-        self.resolution_b = ButtonImage(self.resolution_window, 150, 0, self.game.load_game_image('assets/resolution/C.png', 150, 150)) # 1024 x 768
-        self.resolution_c = ButtonImage(self.resolution_window, 0, 150, self.game.load_game_image('assets/resolution/B.png', 150, 150)) # 1280 x 720
-        self.resolution_d = ButtonImage(self.resolution_window, 150, 150, self.game.load_game_image('assets/resolution/A.png', 150, 150)) # 1920 x 1080
+        self.resolution_a = ButtonTest(self.resolution_window, self.game.load_game_image('assets/resolution/D.png', 150, 150), 110, 150, 200, 75, 8, 20) # 800 x 600
+        self.resolution_b = ButtonTest(self.resolution_window, self.game.load_game_image('assets/resolution/C.png', 150, 150), 110, 250, 200, 75, 8, 20) # 1024 x 768
+        self.resolution_c = ButtonTest(self.resolution_window, self.game.load_game_image('assets/resolution/B.png', 150, 150), 110, 350, 200, 75, 8, 20) # 1280 x 720
+        self.resolution_d = ButtonTest(self.resolution_window, self.game.load_game_image('assets/resolution/A.png', 150, 150), 110, 50, 200, 75, 8, 20) # 1920 x 1080
 
     def update_background(self):
         self.resolution_window.fill((255, 255, 255))
@@ -78,20 +78,20 @@ class Graphics():
 
         # Display:
 
-        self.graphics_window = pygame.display.set_mode((300, 400))
+        self.graphics_window = pygame.display.set_mode((400, 500))
         pygame.display.set_caption("Fort Defender: ")
         pygame.display.set_icon(self.game.load_game_image('assets/icon.png', 32, 32))
         self.graphics_status = True
 
         # Background:
 
-        self.background = self.game.load_game_image('assets/menu.png', 300, 400)
+        self.background = self.game.load_game_image('assets/menu.png', 400, 500)
 
         # Buttons: 
 
-        self.effects = ButtonImage(self.graphics_window, 0, 0, self.game.load_game_image('assets/graphics/A_on.png', 150, 150)) 
-        self.clouds = ButtonImage(self.graphics_window, 150, 0, self.game.load_game_image('assets/graphics/B_on.png', 150, 150))
-        self.start = ButtonImage(self.graphics_window, 75, 250, self.game.load_game_image('assets/graphics/start.png', 150, 150)) 
+        self.effects = ButtonTest(self.graphics_window, self.game.load_game_image('assets/graphics/A_on.png', 150, 150), 105, 50, 200, 75, 8, 20) 
+        self.clouds = ButtonTest(self.graphics_window, self.game.load_game_image('assets/graphics/B_on.png', 150, 150), 105, 150, 200, 75, 8, 20)
+        self.start = ButtonTest(self.graphics_window, self.game.load_game_image('assets/graphics/start.png', 150, 150), 125, 300, 150, 75, 8, 20) 
 
     def update_background(self):
         self.graphics_window.fill((255, 255, 255))

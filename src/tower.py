@@ -38,7 +38,7 @@ class Tower(pygame.sprite.Sprite):
         self.rect.x = x 
         self.rect.y = y
 
-    def update(self, fort):
+    def update(self, fort, sounds):
         self.ready = False
         for enemy in self.game.game_enemies:
             if(enemy.alive and enemy.rect.x > self.game.screen_width // 2):
@@ -56,6 +56,8 @@ class Tower(pygame.sprite.Sprite):
                 self.last_shot = pygame.time.get_ticks()
                 ball = Ball(self.game, self.rect.midleft[0], self.rect.midleft[1] - 50, self.angle, self.game.ball_type)
                 self.game.cannon_balls.add(ball)
+                if(sounds.sound_status):
+                    sounds.shoot.play()
 
         if(fort.health <= 250):
             self.image = self.tower_images[2]

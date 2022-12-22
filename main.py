@@ -202,6 +202,9 @@ while(game.engine_running):
                     tower = Tower(game, game.tower_positionss[len(game.game_towers)][0], game.tower_positionss[len(game.game_towers)][1])
                     game.game_towers.add(tower)
                     game.coins -= 2000
+                    sounds.build.play()
+                else:
+                    sounds.error.play()
 
             if(ui.button_balls.render()):
                 fort.add_balls(sounds)
@@ -214,7 +217,7 @@ while(game.engine_running):
 
                 # Sprites: 
 
-                game.update_game_towers(fort)
+                game.update_game_towers(fort, sounds)
                 game.update_game_balls(particles, fort.ball_type)
                 game.update_game_enemies(particles, fort, sounds)
                 game.update_game_mechanics(fort, enemy_animations, enemy_types, enemy_health)
@@ -226,7 +229,7 @@ while(game.engine_running):
 
             crosshair.draw_crosshair()
         else:
-            game.reset_game(fort)
+            game.reset_game(fort, background)
 
     # Update Display: 
 

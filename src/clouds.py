@@ -18,10 +18,6 @@ class Clouds():
 
         self.game = game
 
-        # Movement:
-
-        self.move = 1
-
         # Clouds: 
 
         self.clouds = [ [0, 0, 0], 
@@ -40,12 +36,11 @@ class Clouds():
         self.cloud_sprites = [self.game.load_game_image(f'assets/clouds/{cloud[0]}.png', self.game.screen_width // 6, self.game.screen_height // 12) for cloud in self.clouds]
 
     def handle_clouds(self):
+        move = (self.game.screen_width // 100) // 16
         if(self.game.clouds and self.game.started):
             for cloud in self.clouds:
-                if(cloud[1] < self.game.screen_width):
-                    self.move = (self.game.screen_width // 100) // 8
-                else:
+                if(not cloud[1] < self.game.screen_width):
                     cloud[1] = 0 - (self.game.screen_width // 2)
 
-                cloud[1] += self.move
+                cloud[1] += move
                 self.game.display.blit(self.cloud_sprites[cloud[0]], (cloud[1], cloud[2]))

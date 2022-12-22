@@ -36,14 +36,14 @@ class Fort():
         self.construction = [self.game.load_game_image(f'assets/construction/{i}.png', self.game.display.get_width() // 6, self.game.display.get_height() // 4) for i in range(len(os.listdir('assets/construction')))]
         self.image = self.fort_images[0]
 
-        # Construction Settings:
+        # Construction Properties:
 
         self.construction_start = False
         self.construction_animations = 0
         self.construction_current_time = pygame.time.get_ticks()
         self.construction_timer = 500
 
-        # Ball Settings:
+        # Ball Properties:
 
         self.current_balls = 8
         self.ball_type = 0
@@ -108,10 +108,10 @@ class Fort():
         self.game.display.blit(self.fort_upgrades[self.upgrades], self.rect)
         self.game.display.blit(self.construction[self.construction_animations], self.rect)
 
-        pygame.draw.rect(self.game.display, (250, 0, 0), (10, 10, self.rect.w, 24))
-        pygame.draw.rect(self.game.display, (0, 250, 0), (10, 10, self.rect.w * (self.health / self.max_health), 24))
-        pygame.draw.rect(self.game.display, (0, 0, 0), (10, 10, self.rect.w, 24), 2)
-        self.game.draw_text('(' + str(self.health) + "/" + str(self.max_health) + ")", 1 * (self.game.screen_height // 52), (69, 69, 69), self.game.screen_width // 16, 10)
+        pygame.draw.rect(self.game.display, (250, 0, 0), (0 + self.game.screen_width // 12, 0 + self.game.screen_height // 64, self.rect.w, self.rect.h // 6), border_radius = self.game.screen_width // 64)
+        pygame.draw.rect(self.game.display, (0, 250, 0), (0 + self.game.screen_width // 12, 0 + self.game.screen_height // 64, self.rect.w * (self.health / self.max_health), self.rect.h // 6), border_radius = self.game.screen_width // 64)
+        pygame.draw.rect(self.game.display, (0, 0, 0), (0 + self.game.screen_width // 12, 0 + self.game.screen_height // 64, self.rect.w, self.rect.h // 6), self.game.screen_width // 256, border_radius = self.game.screen_width // 64)
+        self.game.draw_text('(' + str(self.health) + "/" + str(self.max_health) + ")", 1 * (self.game.screen_height // 52), (69, 69, 69), self.game.screen_width // 7, 0 + self.game.screen_height // 42)
 
         if(self.construction_start):
             if(pygame.time.get_ticks() - self.construction_current_time >= self.construction_timer):

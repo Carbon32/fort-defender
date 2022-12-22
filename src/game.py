@@ -148,8 +148,8 @@ class Game():
         self.cannon_balls.draw(self.display)
         self.ball_type = ball_type
 
-    def update_game_towers(self, fort):
-        self.game_towers.update(fort)
+    def update_game_towers(self, fort, sounds):
+        self.game_towers.update(fort, sounds)
         
     def update_game_enemies(self, particles, fort, sounds):
         self.game_enemies.update(self, particles, fort, sounds)
@@ -199,7 +199,7 @@ class Game():
         if(fort.health <= 0):
             self.game_over = True
 
-    def reset_game(self, fort):
+    def reset_game(self, fort, background):
         text_size = 1 * (self.screen_height // 24)
         self.draw_text('GAME OVER', text_size, (204, 0, 0), self.screen_width // 3 + self.screen_width // 9, self.screen_height // 2)
         self.draw_text('PRESS "SPACE" TO RESTART', text_size, (204, 0, 0), self.screen_width // 3 + self.screen_width // 22, self.screen_height // 4)
@@ -220,4 +220,9 @@ class Game():
             fort.upgrades = 0
             fort.max_health = 1000
             fort.current_balls = 8
+            background.current_time = pygame.time.get_ticks()
+            background.cycle_timer = 1000
+            background.cycle = 0 
+            background.night = False
+            background.sky_color = [135, 206, 255]
             self.toggle_mouse_cursor_off()
