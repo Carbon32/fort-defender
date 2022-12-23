@@ -70,8 +70,6 @@ class Game():
 
         self.tower_positionss = []
 
-        # Game Font:
-
     def clear_window(self):
         self.display.fill((0, 0, 0))
 

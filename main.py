@@ -84,7 +84,7 @@ ui = UserInterface(game)
 
 # Particles: #
 
-particles = Particles(game.display)
+particles = Particles(game)
 
 # Background: #
 
@@ -100,7 +100,8 @@ fort = Fort(game, game.screen_width // 3 + game.screen_width // 2, game.screen_h
 
 # Fade:
 
-start_fade = Fade(game.display, 1, ((0, 0, 0)), 30)
+start_fade = Fade(game, 1, ((0, 0, 0)))
+end_fade = Fade(game, 2, ((0, 0, 0)))
 
 # Game Icon: #
 
@@ -212,7 +213,7 @@ while(game.engine_running):
             if(ui.button_ball_type.render()):
                 fort.upgrade_balls(sounds)
 
-            if(start_fade.fade(game.screen_width, game.screen_height) and game.over == False):
+            if(start_fade.fade() and game.over == False):
                 fort.fire_ball(particles, sounds)
 
                 # Sprites: 
@@ -224,11 +225,13 @@ while(game.engine_running):
 
             if(fort.health <= 0):
                 game.over = True
+                end_fade = Fade(game, 2, ((0, 0, 0)))
 
             # Crosshair: 
 
             crosshair.draw_crosshair()
         else:
+            end_fade.fade()
             game.reset_game(fort, background)
 
     # Update Display: 

@@ -38,7 +38,7 @@ class Sounds():
     def play_music(self):
         pygame.mixer.music.load('sounds/music.mp3')
         pygame.mixer.music.set_volume(10)
-        pygame.mixer.music.play(-1, 0.0, 5000)
+        #pygame.mixer.music.play(-1, 0.0, 5000)
 
     def stop_music(self):
         pygame.mixer.music.stop()

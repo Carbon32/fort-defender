@@ -11,7 +11,7 @@ from src.modules import *
 
 # Buttons: #
 
-class ButtonTest():
+class ButtonImage():
     def __init__(self, display, image, x, y, width, height, elevation, border_radius):
 
         # Game:

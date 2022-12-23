@@ -31,8 +31,8 @@ class Menu():
         
         self.button_start = ButtonText(self.game, 'Start', self.game.screen_width // 3, self.game.screen_height // 4, self.game.screen_width // 3 , self.game.screen_height // 5, 22)
         self.button_quit = ButtonText(self.game, 'Exit', self.game.screen_width // 3, self.game.screen_height // 2, self.game.screen_width // 3, self.game.screen_height // 5, 22)
-        self.button_music = ButtonTest(self.game.display, self.game.load_game_image('assets/Buttons/music_on.png', 64, 64), 10, 20, 64, 64, 6, 50)
-        self.button_sound = ButtonTest(self.game.display, self.game.load_game_image('assets/Buttons/sound_on.png', 64, 64), 10, 120, 64, 64, 6, 50)
+        self.button_music = ButtonImage(self.game.display, self.game.load_game_image('assets/Buttons/music_on.png', 64, 64), 10, 20, 64, 64, 6, 50)
+        self.button_sound = ButtonImage(self.game.display, self.game.load_game_image('assets/Buttons/sound_on.png', 64, 64), 10, 120, 64, 64, 6, 50)
 
     def handle_menu(self, sounds):
         if(self.menu_status):

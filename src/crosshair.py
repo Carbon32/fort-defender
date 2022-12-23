@@ -20,7 +20,7 @@ class Crosshair():
 
         # Crosshair Sprite: 
 
-        self.crosshair = self.game.load_game_image('assets/crosshair/crosshair.png', 32, 32)
+        self.crosshair = self.game.load_game_image('assets/crosshair/crosshair.png', self.game.screen_width // 32, self.game.screen_width // 32)
 
         # Crosshair Rectangle: 
 

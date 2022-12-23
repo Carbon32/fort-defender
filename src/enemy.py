@@ -19,6 +19,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.alive = True
         self.speed = speed
+        self.default_speed = self.speed
         self.health = health
         self.max_health = health
 
@@ -49,7 +50,34 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+        # Collision Rectangle:
+
+        self.collision_box_front = pygame.Rect(self.rect.x + self.rect.w, self.rect.y, self.rect.w // 4, self.rect.h)
+        self.collision_box_back = pygame.Rect(self.rect.x, self.rect.y, self.rect.w // 4, self.rect.h)
+
+        # Spawn Cooldown: 
+
+        self.spawned = pygame.time.get_ticks()
+
+        # Colliding With:
+
+        self.colliding_with = None
+
     def update(self, game, particles, fort, sounds):
+        if(self.alive):
+            self.collision_box_front = pygame.Rect(self.rect.x + self.rect.w, self.rect.y, self.rect.w // 4, self.rect.h)
+            self.collision_box_back = pygame.Rect(self.rect.x, self.rect.y, self.rect.w // 4, self.rect.h)
+
+        if(pygame.time.get_ticks() - self.spawned > 1000 and self.alive):
+            for enemy in game.game_enemies:
+                if(pygame.Rect.colliderect(self.collision_box_front, enemy.collision_box_back)):
+                    self.colliding_with = enemy
+                    self.speed = 0
+
+        if(self.colliding_with != None):
+            if(not pygame.Rect.colliderect(self.collision_box_front, self.colliding_with.collision_box_back)):
+                self.speed = self.default_speed
+
         if(self.alive):
             if(pygame.sprite.spritecollide(self, game.cannon_balls, True)):
                 if(game.ball_type == 0):
@@ -60,7 +88,7 @@ class Enemy(pygame.sprite.Sprite):
                     self.health -= (20 * game.ball_type)
 
                 if(self.rect.x > 0):
-                    particles.add_game_particle("hit", self.rect.x, self.rect.y)
+                    particles.add_game_particle("hit", self.rect.x + (self.rect.w // 2), self.rect.y - (self.rect.h // 32))
 
             if(self.rect.right > fort.rect.left):
                 self.update_action(1)
@@ -81,6 +109,8 @@ class Enemy(pygame.sprite.Sprite):
                 game.kills += 1
                 game.available_balls += 3
                 self.update_action(2)
+                self.collision_box_front = pygame.Rect(0, 0, 0, 0)
+                self.collision_box_back = pygame.Rect(0, 0, 0, 0)
                 self.alive = False
 
                 if(sounds.sound_status):
