@@ -36,6 +36,8 @@ class UserInterface():
         pygame.draw.rect(self.game.display, (0, 0, 0), pygame.Rect(self.game.screen_width - (self.game.screen_width // 6), 0 + (self.game.screen_height // 7), self.game.screen_width // 3, self.game.screen_height // 2), self.game.screen_width // 128, border_radius = 50)
         pygame.draw.rect(self.game.display, self.container_color, pygame.Rect(self.game.screen_width - (self.game.screen_width // 2), 0, self.game.screen_width, self.game.screen_height // 10), border_radius = 50)
         pygame.draw.rect(self.game.display, (0, 0, 0), pygame.Rect(self.game.screen_width - (self.game.screen_width // 2), 0, self.game.screen_width, self.game.screen_height // 10), self.game.screen_width // 128, border_radius = 50)
+        pygame.draw.rect(self.game.display, self.container_color, pygame.Rect(self.game.screen_width // 2 - (self.game.screen_width // 6), 0, self.game.screen_width // 7, self.game.screen_height // 10), border_radius = 50)
+        pygame.draw.rect(self.game.display, (0, 0, 0), pygame.Rect(self.game.screen_width // 2 - (self.game.screen_width // 6), 0, self.game.screen_width // 7, self.game.screen_height // 10), self.game.screen_width // 128, border_radius = 50)
     
     def show_stats(self, fort):
         text_size = 1 * (self.game.screen_height // 54)
@@ -49,3 +51,4 @@ class UserInterface():
         self.game.draw_text('250c (5b)', text_size, (69, 69, 69), self.game.screen_width - self.game.screen_width // 8, 5 * (self.game.screen_height // 9))
         self.game.draw_text('1,000c', text_size, (69, 69, 69), self.game.screen_width - self.game.screen_width // 9, self.game.screen_height // 2 - self.game.screen_height // 8)
         self.game.draw_text('2,000c (Max: 2)', text_size - 2, (69, 69, 69), self.game.screen_width - self.game.screen_width // 7, self.game.screen_height // 2 - self.game.screen_height // 24)
+        self.game.draw_text('High Score: ' + str(self.game.high_score), text_size, (69, 69, 69), self.game.screen_width // 2 - (self.game.screen_width // 8), 0 + self.game.screen_height // 28)

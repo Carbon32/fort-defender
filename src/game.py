@@ -70,6 +70,10 @@ class Game():
 
         self.tower_positionss = []
 
+        # High Score:
+
+        self.high_score = 0
+
     def clear_window(self):
         self.display.fill((0, 0, 0))
 
@@ -83,6 +87,13 @@ class Game():
         ]
 
         self.game_font = pygame.font.Font(os.getcwd() + '/game_font.ttf', self.screen_width // 20)
+
+        if(os.path.exists('high_score.txt') == False):
+            with open("high_score.txt", mode = "w") as hs:
+                hs.write("0")
+
+        with open("high_score.txt", mode = "r") as hs:
+            self.high_score = hs.read()
 
     def draw_balls(self, particles):
         self.cannon_balls.update(particles, self.screen_width, self.screen_height)
@@ -202,6 +213,11 @@ class Game():
         self.draw_text('GAME OVER', text_size, (204, 0, 0), self.screen_width // 3 + self.screen_width // 9, self.screen_height // 2)
         self.draw_text('PRESS "SPACE" TO RESTART', text_size, (204, 0, 0), self.screen_width // 3 + self.screen_width // 22, self.screen_height // 4)
         self.toggle_mouse_cursor_on()
+
+        if(self.kills > int(self.high_score)):
+            with open('high_score.txt', 'w') as hs:
+                hs.write(str(self.kills))
+                self.high_score = self.kills
 
         if(pygame.key.get_pressed()[pygame.K_SPACE]):
             self.over = False
