@@ -22,7 +22,7 @@
 
 ## About:
 
-<img src = "https://i.imgur.com/v5JnN81.png" width = 960 height = 540>
+<img src = "https://i.imgur.com/WX6nSOD.png" width = 960 height = 540>
 
 
 This is a Fort Defending video game, made in Python. The engine is able to handle a lot of tasks including: 
@@ -41,7 +41,7 @@ This is a Fort Defending video game, made in Python. The engine is able to handl
 * Enabling or disabling certain features including particles & clouds.
 * And a few more minor features...
 
-I made sure the engine is well optimized and all of the features are split into different classes. I don't have a lot of time to work on this tiny game, the progress seems to be slower than what i've expected. The core of the engine needs to re-written.
+This project is no longer in-development.
 
 ## Installation:
 
@@ -69,9 +69,12 @@ To be able to run Fort Defender, you need to have Pygame installed on your compu
 
 ## Changelog:
 
-Changes made on: 09/02/2022
+Changes made on: 12/27/2022
 
-* Started properly organizing the game code.
+* Better code
+* Better particles
+* Better user interface & buttons
+* Fixed a few bugs & issuse
 
 ## License:
 
