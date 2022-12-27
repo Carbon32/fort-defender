@@ -31,12 +31,12 @@ This is a Fort Defending video game, made in Python. The engine is able to handl
 * Displaying an interactive background, supporting the day & night cycle.
 * Displaying different animations (moving, death, attack...).
 * Playing sounds and music.
-* Displaying interactive Buttons (repair, re-load, add towers...).
+* Displaying interactive and animated Buttons (repair, re-load, add towers...).
 * Displaying a User Interface (Health, Ammunition and other stuff).
 * Displaying & updating automatic towers (helps the player taking down enemy tanks).
 * Displaying particles & different effects (including lighting, can be seen when you shoot a tank during night time).
 * Increasing the game level after a few kills, making the game harder. 
-* Displaying different types of enemies (including custom animations & health).
+* Supporting multiple types of enemies (including custom animations & health).
 * Supporting multiple game resolutions.
 * Enabling or disabling certain features including particles & clouds.
 * And a few more minor features...
@@ -74,7 +74,7 @@ Changes made on: 12/27/2022
 * Better code
 * Better particles
 * Better user interface & buttons
-* Fixed a few bugs & issuse
+* Fixed a few bugs & issues
 
 ## License:
 
