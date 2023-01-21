@@ -86,7 +86,7 @@ class ButtonImage():
         self.image = image
 
 class ButtonText():
-    def __init__(self, game, text, x, y, width, height, elevation):
+    def __init__(self, game, text, x, y, width, height, elevation, font_type):
 
         # Game:
 
@@ -115,7 +115,7 @@ class ButtonText():
 
         # Text:
 
-        self.text_surface = self.game.game_font.render(text, True, (255, 255, 255))
+        self.text_surface = self.game.fonts[font_type].render(text, True, (255, 255, 255))
         self.text_rect = self.text_surface.get_rect(center = self.top_rect.center)
 
     def render(self):
@@ -138,6 +138,7 @@ class ButtonText():
                         self.button_timer = pygame.time.get_ticks()
             else:
                 self.top_color = (203, 92, 100)
+                self.bottom_color = (160, 68, 93)
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.dynamic_elevation = self.elevation
@@ -150,6 +151,6 @@ class ButtonText():
                     self.action = False
                     return True
 
-    def change_text(self, text):
-        self.text_surface = self.game.game_font.render(text, True, (255, 255, 255))
+    def change_text(self, font, text):
+        self.text_surface = self.game.fonts[font].render(text, True, (255, 255, 255))
         self.text_rect = self.text_surface.get_rect(center = self.top_rect.center)

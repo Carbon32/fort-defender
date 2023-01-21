@@ -86,7 +86,11 @@ class Game():
             [self.screen_width - (self.screen_width // 5), (self.screen_height // 3) + (self.screen_height // 2)],
         ]
 
-        self.game_font = pygame.font.Font(os.getcwd() + '/game_font.ttf', self.screen_width // 20)
+        self.fonts = {
+            'huge' : pygame.font.Font(os.getcwd() + '/game_font.ttf', self.screen_width // 14),
+            'large' : pygame.font.Font(os.getcwd() + '/game_font.ttf', self.screen_width // 20),
+            'small' : pygame.font.Font(os.getcwd() + '/game_font.ttf', self.screen_width // 48)
+        }
 
         if(os.path.exists('high_score.txt') == False):
             with open("high_score.txt", mode = "w") as hs:
@@ -102,6 +106,10 @@ class Game():
     def set_game_icon(self, path):
         icon = pygame.image.load(path).convert_alpha()
         pygame.display.set_icon(icon)
+
+    def draw_custom_text(self, font, text, color, x, y):
+        image = font.render(text, True, color)
+        self.display.blit(image, (x, y))
 
     def load_game_enemies(self, enemy_types, animation_types, enemy_health):
         enemy_animations = []
