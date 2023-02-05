@@ -22,7 +22,7 @@
 
 ## About:
 
-<img src = "https://i.imgur.com/WX6nSOD.png" width = 960 height = 540>
+<img src = "https://i.imgur.com/WX6nSOD.png" width = 100% height = 100%>
 
 
 This is a Fort Defending video game, made in Python. The engine is able to handle a lot of tasks including: 
@@ -69,11 +69,9 @@ To be able to run Fort Defender, you need to have Pygame installed on your compu
 
 ## Changelog:
 
-Changes made on: 01/22/2023
+Changes made on: 02/05/2023
 
-* Added game title to the menu
-* Fixed an issue with buttons
-* Changed menu background color
+* Better documentation
 
 ## License:
 
