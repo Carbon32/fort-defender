@@ -41,7 +41,7 @@ This is a Fort Defending video game, made in Python. The engine is able to handl
 * Enabling or disabling certain features including particles & clouds.
 * And a few more minor features...
 
-This project is no longer in-development.
+This project is no longer in-development. But that doesn't mean it won't receive some updates. 
 
 ## Installation:
 
@@ -69,7 +69,7 @@ To be able to run Fort Defender, you need to have Pygame installed on your compu
 
 ## Changelog:
 
-Changes made on: 02/05/2023
+Changes made on: 02/12/2023
 
 * Better documentation
 
